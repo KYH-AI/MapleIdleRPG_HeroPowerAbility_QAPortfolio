@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>어빌리티 데이터 테이블 | 메이플 키우기 용사의 힘 어빌리티</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent: #4361ee;
+      --accent-light: #eef0fd;
+
+      --grade-normal:    #6b7280; --grade-normal-bg: #f3f4f6;
+      --grade-rare:      #2563eb; --grade-rare-bg:   #eff6ff;
+      --grade-epic:      #7c3aed; --grade-epic-bg:   #f5f3ff;
+      --grade-unique:    #d97706; --grade-unique-bg: #fffbeb;
+      --grade-legend:    #16a34a; --grade-legend-bg: #f0fdf4;
+      --grade-mystic:    #dc2626; --grade-mystic-bg: #fef2f2;
+
+      --phase1: #eff6ff; --phase2: #f0fdf4; --phase3: #fef2f2;
+    }
+
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text-primary); font-size: 14px; line-height: 1.6; }
+
+    .page-wrap { max-width: 1300px; margin: 0 auto; padding: 0 20px 60px; }
+
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 16px 32px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 10;
+    }
+    .header-title { font-size: 15px; font-weight: 700; }
+    .header-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .nav-links { display: flex; gap: 10px; }
+    .nav-links a {
+      font-size: 12px; color: var(--text-secondary); text-decoration: none;
+      padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; transition: background .15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--accent-light); color: var(--accent); border-color: #c7d2fe; }
+
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-top: 24px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+    .section h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .section-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; }
+
+    .note {
+      background: var(--accent-light); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; padding: 10px 14px;
+      font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;
+    }
+    .formula-box {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 18px; margin: 14px 0; font-size: 13px;
+    }
+    .formula-box .f-label { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+    .formula-box code { font-family: 'Courier New', monospace; font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+    /* ── Grade badge ── */
+    .gb { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .gb-normal { background: var(--grade-normal-bg); color: var(--grade-normal); }
+    .gb-rare   { background: var(--grade-rare-bg);   color: var(--grade-rare); }
+    .gb-epic   { background: var(--grade-epic-bg);   color: var(--grade-epic); }
+    .gb-unique { background: var(--grade-unique-bg); color: var(--grade-unique); }
+    .gb-legend { background: var(--grade-legend-bg); color: var(--grade-legend); }
+    .gb-mystic { background: var(--grade-mystic-bg); color: var(--grade-mystic); }
+
+    /* ── Table (shared) ── */
+    .tbl-wrap { overflow-x: auto; margin-top: 14px; }
+    .dtbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .dtbl th {
+      background: #f7f8fb; font-weight: 600; color: var(--text-secondary);
+      padding: 9px 11px; border: 1px solid var(--border); text-align: center; white-space: nowrap;
+    }
+    .dtbl td { padding: 8px 11px; border: 1px solid var(--border); vertical-align: middle; text-align: center; }
+    .dtbl tr:hover td { background: #fafbff; }
+    .phase-1 td { background: var(--phase1); } .phase-1:hover td { filter: brightness(.97); }
+    .phase-2 td { background: var(--phase2); } .phase-2:hover td { filter: brightness(.97); }
+    .phase-3 td { background: var(--phase3); } .phase-3:hover td { filter: brightness(.97); }
+    .td-left { text-align: left !important; }
+    .lv-num { font-weight: 700; }
+    .none-cell { color: var(--text-muted); }
+
+    /* stat/prob chips */
+    .sv { display: inline-block; background: #f1f5f9; border-radius: 4px; padding: 2px 7px; font-size: 12px; font-family: 'Courier New', monospace; }
+    .sv.normal { background: var(--grade-normal-bg); color: var(--grade-normal); }
+    .sv.rare   { background: var(--grade-rare-bg);   color: var(--grade-rare); }
+    .sv.epic   { background: var(--grade-epic-bg);   color: var(--grade-epic); }
+    .sv.unique { background: var(--grade-unique-bg); color: var(--grade-unique); }
+    .sv.legend { background: var(--grade-legend-bg); color: var(--grade-legend); }
+    .sv.mystic { background: var(--grade-mystic-bg); color: var(--grade-mystic); }
+
+    .prob-val  { font-family: 'Courier New', monospace; font-size: 12px; }
+    .prob-low  { color: var(--grade-rare); }
+    .prob-mid  { color: var(--grade-unique); }
+
+    .cat { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 700; background: #f1f5f9; color: var(--text-muted); margin-right: 4px; }
+
+    /* cost cells */
+    .cost-base  { font-weight: 700; color: var(--text-primary); }
+    .cost-val   { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-secondary); }
+    .cost-max   { font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; color: var(--grade-legend); }
+
+    /* Rec stat tags */
+    .rec-tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+    .rec-tag  { display: inline-block; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; border-radius: 6px; padding: 1px 7px; font-size: 11px; font-weight: 600; }
+    .rec-tag.new { background: #fef9c3; color: #92400e; border-color: #fde68a; }
+
+    /* legend strip */
+    .legend-strip { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
+    .ld { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+    /* placeholder */
+    .placeholder-box { border: 2px dashed var(--border); border-radius: 10px; padding: 48px 24px; text-align: center; color: var(--text-muted); margin-top: 14px; }
+    .placeholder-box .ph-icon  { font-size: 36px; margin-bottom: 10px; }
+    .placeholder-box .ph-title { font-size: 15px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+    .placeholder-box .ph-desc  { font-size: 13px; }
+
+    footer { text-align: center; padding: 28px 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 20px; }
+
+    /* ── Tooltip ── */
+    .th-tooltip { position: relative; display: inline-flex; align-items: center; gap: 4px; }
+    .th-tooltip .tip-icon { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; background: var(--text-muted); color: #fff; font-size: 10px; font-weight: 700; cursor: default; flex-shrink: 0; }
+    .th-tooltip .tip-box { display: none; position: fixed; background: #1e293b; color: #e2e8f0; font-size: 12px; font-weight: 400; white-space: normal; width: 240px; padding: 8px 12px; border-radius: 6px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,.25); line-height: 1.6; text-align: left; pointer-events: none; }
+    .th-tooltip .tip-box.tip-active { display: block; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-title">메이플 키우기 | 용사의 힘 어빌리티 — Step 2</div>
+    <div class="header-sub">데이터 테이블</div>
+  </div>
+  <nav class="nav-links">
+    <a href="step1_analysis.html">① 콘텐츠 분석서</a>
+    <a href="step2_table.html" class="active">② 데이터 테이블</a>
+    <a href="step3_simulator.html">③ 시뮬레이터</a>
+    <a href="step4_testcase.html">④ Test Case</a>
+  </nav>
+</header>
+
+<div class="page-wrap">
+
+<section class="section" style="margin-top:24px;">
+  <div class="section-label">OVERVIEW</div>
+  <h2 style="margin-bottom:10px;">용사의 힘 어빌리티 데이터 테이블</h2>
+  <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px;">
+    본 데이터 테이블은 메이플키우기 용사의 힘 어빌리티 시스템의 옵션 수치, 등급별 확률, 변환 레벨별 데이터를 인게임 기반으로 수집하여 정리한 검증용 기준 문서입니다.<br>
+    단순 정보 나열이 아닌 <strong>Step 3 시뮬레이터</strong>와 <strong>Step 4 Test Case</strong>의 기준값(Expected Value) 역할을 수행하며, 두 산출물의 검증 근거로 활용됩니다.
+  </p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:180px;background:#fdf8ff;border:1px solid #d8b4fe;border-radius:8px;padding:12px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#7c3aed;letter-spacing:.06em;margin-bottom:6px;">STEP 1 분석서 연계</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.7;">옵션 수치, 등급 구조, 비용표 등<br>콘텐츠 분석의 데이터 근거로 활용</div>
+    </div>
+    <div style="flex:1;min-width:180px;background:var(--accent-light);border:1px solid #c7d2fe;border-radius:8px;padding:12px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.06em;margin-bottom:6px;">STEP 3 시뮬레이터 연계</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.7;">확률 검증 및 비용 계산의 기준값 제공<br>옵션 step 수치 범위 검증 기반</div>
+    </div>
+    <div style="flex:1;min-width:180px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#16a34a;letter-spacing:.06em;margin-bottom:6px;">STEP 4 Test Case 연계</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.7;">UI 출력 정합성 검증의 기준값 제공<br>옵션 해금 조건 및 등급 분기 검증 기반</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TABLE 01 · 어빌리티 옵션 스탯 테이블
+══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-label">TABLE 01</div>
+  <h2>어빌리티 옵션 스탯 테이블</h2>
+  <p class="section-desc">전체 19종 옵션의 등급별 수치 범위(최솟값~최댓값) 및 옵션 해금 조건.</p>
+  <div class="note">실제 지급 값은 min~max 사이 step 단위 추첨. 각 등급 내 옵션 종류는 균등 확률(1/N)로 추첨.</div>
+
+  <div class="tbl-wrap">
+    <table class="dtbl">
+      <thead>
+        <tr>
+          <th class="td-left" style="min-width:140px;">옵션명</th>
+          <th class="td-left" style="min-width:165px;">변수명</th>
+          <th style="min-width:100px;">
+            <span class="th-tooltip">옵션 해금 조건<span class="tip-icon">?</span>
+              <span class="tip-box">이 옵션이 처음 등장하는 <strong>최소 등급</strong>과 <strong>최소 변환 레벨</strong>.<br><br>예) 레전드리 / 변환 Lv 5~ → 변환 레벨 5 이상에서 레전드리 등급을 뽑아야 등장.<br><br>해당 등급보다 높은 등급에서도 항상 포함됩니다.</span>
+            </span>
+          </th>
+          <th><span class="gb gb-normal">노말</span></th>
+          <th><span class="gb gb-rare">레어</span></th>
+          <th><span class="gb gb-epic">에픽</span></th>
+          <th><span class="gb gb-unique">유니크</span></th>
+          <th><span class="gb gb-legend">레전드리</span></th>
+          <th><span class="gb gb-mystic">미스틱</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-left"><span class="cat">고정</span>주 스탯</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">MainStat</td>
+          <td><span class="gb gb-normal">노말</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td><span class="sv normal">40~60</span></td>
+          <td><span class="sv rare">100~150</span></td>
+          <td><span class="sv epic">200~300</span></td>
+          <td><span class="sv unique">400~700</span></td>
+          <td><span class="sv legend">800~1,200</span></td>
+          <td><span class="sv mystic">1,500~2,500</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">고정</span>최대 HP</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">MaxHp</td>
+          <td><span class="gb gb-normal">노말</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td><span class="sv normal">1,200~1,500</span></td>
+          <td><span class="sv rare">1,800~3,000</span></td>
+          <td><span class="sv epic">4,500~9,000</span></td>
+          <td><span class="sv unique">15,000~30,000</span></td>
+          <td><span class="sv legend">35,000~65,000</span></td>
+          <td><span class="sv mystic">70,000~115,000</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">고정</span>최대 MP</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">MaxMp</td>
+          <td><span class="gb gb-normal">노말</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td><span class="sv normal">30~40</span></td>
+          <td><span class="sv rare">50~70</span></td>
+          <td><span class="sv epic">100~150</span></td>
+          <td><span class="sv unique">200~400</span></td>
+          <td><span class="sv legend">500~800</span></td>
+          <td><span class="sv mystic">900~1,500</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">고정</span>초당 MP 회복</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">MpRegen</td>
+          <td><span class="gb gb-normal">노말</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td><span class="sv normal">3~5</span></td>
+          <td><span class="sv rare">6~10</span></td>
+          <td><span class="sv epic">11~20</span></td>
+          <td><span class="sv unique">21~30</span></td>
+          <td><span class="sv legend">40~60</span></td>
+          <td><span class="sv mystic">80~150</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">고정</span>명중</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">HitChance</td>
+          <td><span class="gb gb-normal">노말</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td><span class="sv normal">2~3</span></td>
+          <td><span class="sv rare">4~5</span></td>
+          <td><span class="sv epic">6~8</span></td>
+          <td><span class="sv unique">10~12</span></td>
+          <td><span class="sv legend">14~16</span></td>
+          <td><span class="sv mystic">20~25</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">고정</span>회피</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">AvoidChance</td>
+          <td><span class="gb gb-normal">노말</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td><span class="sv normal">2~3</span></td>
+          <td><span class="sv rare">4~5</span></td>
+          <td><span class="sv epic">6~8</span></td>
+          <td><span class="sv unique">10~12</span></td>
+          <td><span class="sv legend">14~16</span></td>
+          <td><span class="sv mystic">20~25</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">고정</span>디버프 내성</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">DebuffResist</td>
+          <td><span class="gb gb-rare">레어</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td><span class="sv rare">4~5</span></td>
+          <td><span class="sv epic">6~8</span></td>
+          <td><span class="sv unique">10~12</span></td>
+          <td><span class="sv legend">14~16</span></td>
+          <td><span class="sv mystic">18~25</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>데미지</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">MainDamagePower</td>
+          <td><span class="gb gb-rare">레어</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td><span class="sv rare">3%~5%</span></td>
+          <td><span class="sv epic">7%~10%</span></td>
+          <td><span class="sv unique">12%~15%</span></td>
+          <td><span class="sv legend">18%~25%</span></td>
+          <td><span class="sv mystic">28%~40%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>크리티컬 확률</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">CriticalChance</td>
+          <td><span class="gb gb-epic">에픽</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td><span class="sv epic">3%~6%</span></td>
+          <td><span class="sv unique">7%~9%</span></td>
+          <td><span class="sv legend">10%~14%</span></td>
+          <td><span class="sv mystic">15%~20%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>크리티컬 저항</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">CriticalResist</td>
+          <td><span class="gb gb-epic">에픽</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td><span class="sv epic">4.5%~9%</span></td>
+          <td><span class="sv unique">10.5%~13.5%</span></td>
+          <td><span class="sv legend">15%~21%</span></td>
+          <td><span class="sv mystic">22.5%~30%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>최대 데미지 배율</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">MaxDamageRatio</td>
+          <td><span class="gb gb-epic">에픽</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td><span class="sv epic">7%~10%</span></td>
+          <td><span class="sv unique">12%~15%</span></td>
+          <td><span class="sv legend">18%~25%</span></td>
+          <td><span class="sv mystic">28%~40%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>최소 데미지 배율</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">MinDamageRatio</td>
+          <td><span class="gb gb-epic">에픽</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td><span class="sv epic">7%~10%</span></td>
+          <td><span class="sv unique">12%~15%</span></td>
+          <td><span class="sv legend">18%~25%</span></td>
+          <td><span class="sv mystic">28%~40%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>받는 피해 감소</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">Toughness</td>
+          <td><span class="gb gb-unique">유니크</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td><span class="sv unique">2%~3%</span></td>
+          <td><span class="sv legend">4%~6%</span></td>
+          <td><span class="sv mystic">7%~10%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>공격 속도</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">AttackSpeed</td>
+          <td><span class="gb gb-unique">유니크</span><br><small style="color:var(--text-muted);">변환 Lv 1~</small></td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td class="none-cell">—</td>
+          <td><span class="sv unique">7%~9%</span></td>
+          <td><span class="sv legend">10%~14%</span></td>
+          <td><span class="sv mystic">15%~20%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>메소 획득량</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">BonusGoldPercent</td>
+          <td><span class="gb gb-legend">레전드리</span><br><small style="color:var(--text-muted);">변환 Lv 5~</small></td>
+          <td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td>
+          <td><span class="sv legend">5%~8%</span></td>
+          <td><span class="sv mystic">9%~15%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>경험치 획득량</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">BonusExpPercent</td>
+          <td><span class="gb gb-legend">레전드리</span><br><small style="color:var(--text-muted);">변환 Lv 5~</small></td>
+          <td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td>
+          <td><span class="sv legend">5%~8%</span></td>
+          <td><span class="sv mystic">9%~15%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>방어 관통력</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">PiercePower</td>
+          <td><span class="gb gb-legend">레전드리</span><br><small style="color:var(--text-muted);">변환 Lv 5~</small></td>
+          <td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td>
+          <td><span class="sv legend">8%~12%</span></td>
+          <td><span class="sv mystic">14%~20%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>보스 몬스터 데미지</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">AttackPowerToBoss</td>
+          <td><span class="gb gb-legend">레전드리</span><br><small style="color:var(--text-muted);">변환 Lv 5~</small></td>
+          <td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td>
+          <td><span class="sv legend">18%~25%</span></td>
+          <td><span class="sv mystic">28%~40%</span></td>
+        </tr>
+        <tr>
+          <td class="td-left"><span class="cat">%</span>일반 몬스터 데미지</td>
+          <td class="td-left" style="font-family:monospace;font-size:11px;color:var(--text-muted);">AttackPowerExcludeBoss</td>
+          <td><span class="gb gb-legend">레전드리</span><br><small style="color:var(--text-muted);">변환 Lv 5~</small></td>
+          <td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="none-cell">—</td>
+          <td><span class="sv legend">18%~25%</span></td>
+          <td><span class="sv mystic">28%~40%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend-strip" style="margin-top:12px;">
+    <span><span class="cat">고정</span> 절대 수치 옵션</span>
+    <span><span class="cat">%</span> 비율 옵션</span>
+    <span style="color:var(--text-muted);">— : 해당 등급에서 미등장</span>
+    <span style="color:var(--grade-legend);">레전드리/미스틱 전용 옵션(메소/경험치/관통/보스/일반)은 Lv 5 이상에서만 획득 가능</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     TABLE 02 · 변환 레벨 종합 데이터 (경험치 / 등급 풀 / 추천 스탯)
+══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-label">TABLE 02</div>
+  <h2>변환 레벨 종합 데이터</h2>
+  <p class="section-desc">레벨별 누적 경험치(명예의 훈장), 단계별 필요량, 전체 대비 비중, 등급 풀, 추천 스탯 변화.</p>
+  <div class="note">누적 경험치 = 해당 레벨에 도달하기 위해 총 소모된 명예의 훈장 합계. 단계별 = 직전 레벨 대비 추가 필요량.</div>
+
+  <div class="tbl-wrap">
+    <table class="dtbl">
+      <thead>
+        <tr>
+          <th style="width:60px;">
+            <span class="th-tooltip">레벨<span class="tip-icon">?</span>
+              <span class="tip-box">어빌리티 변환 레벨 (1~20).<br>레벨이 높을수록 높은 등급과 더 많은 옵션 종류가 해금됩니다.</span>
+            </span>
+          </th>
+          <th style="min-width:110px;">
+            <span class="th-tooltip">누적 경험치<br><small style="font-weight:400;">(명예의 훈장)</small><span class="tip-icon">?</span>
+              <span class="tip-box">해당 레벨에 도달하기 위해 총 소모된 명예의 훈장 합계(Lv 1부터 누산).<br>Lv 20 최종값 = 약 150만 개.</span>
+            </span>
+          </th>
+          <th style="min-width:100px;">
+            <span class="th-tooltip">단계별 필요량<span class="tip-icon">?</span>
+              <span class="tip-box">직전 레벨에서 이 레벨로 올라가는 데 추가로 필요한 명예의 훈장 수.<br>레벨이 높아질수록 기하급수적으로 증가합니다.</span>
+            </span>
+          </th>
+          <th style="width:70px;">
+            <span class="th-tooltip">전체 대비<span class="tip-icon">?</span>
+              <span class="tip-box">Lv 1→20 총 소모 훈장(약 150만 개) 대비 해당 레벨까지의 누적 소모 비율.<br>100% = Lv 20 도달 완료.</span>
+            </span>
+          </th>
+          <th style="min-width:120px;">
+            <span class="th-tooltip">등급 풀<br><small style="font-weight:400;">(최고 등급)</small><span class="tip-icon">?</span>
+              <span class="tip-box">해당 레벨에서 출현 가능한 최고 등급.<br>G4=유니크(Lv 1~4) → G5=레전드리(Lv 5~7) → G6=미스틱(Lv 8~20).<br>낮은 등급은 항상 포함됩니다.</span>
+            </span>
+          </th>
+          <th style="min-width:90px;">
+            <span class="th-tooltip">기본 리롤 비용<br><small style="font-weight:400;">(잠금 0개)</small><span class="tip-icon">?</span>
+              <span class="tip-box">잠금 슬롯이 없을 때(k=0) 어빌리티 옵션 1회 변경에 소모되는 명예의 훈장.<br>잠금 슬롯이 늘수록 비용 = L0 × (1 + 0.5 × k)로 증가합니다.</span>
+            </span>
+          </th>
+          <th style="min-width:200px;">
+            <span class="th-tooltip">추천 스탯 (종수)<span class="tip-icon">?</span>
+              <span class="tip-box">해당 레벨에서 추천되는 어빌리티 옵션 목록.<br>초록 = Lv 1부터 존재하는 5종 / 노랑 = Lv 5에서 신규 추가된 3종.</span>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="phase-1">
+          <td class="lv-num">Lv 1</td>
+          <td>약 5,000</td><td>약 5,000</td><td>0.3%</td>
+          <td><span class="gb gb-unique">유니크 (G4)</span></td>
+          <td><span class="cost-base">20</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">공격 속도</span><span class="rec-tag">공격력</span><span class="rec-tag">최소 데미지 배율</span><span class="rec-tag">최대 데미지 배율</span><span class="rec-tag">크리티컬 확률</span></div></td>
+        </tr>
+        <tr class="phase-1">
+          <td class="lv-num">Lv 2</td>
+          <td>약 10,000</td><td>약 7,000</td><td>0.7%</td>
+          <td><span class="gb gb-unique">유니크 (G4)</span></td>
+          <td><span class="cost-base">30</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">5종 동일</span></div></td>
+        </tr>
+        <tr class="phase-1">
+          <td class="lv-num">Lv 3</td>
+          <td>약 20,000</td><td>약 6,000</td><td>1.3%</td>
+          <td><span class="gb gb-unique">유니크 (G4)</span></td>
+          <td><span class="cost-base">40</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">5종 동일</span></div></td>
+        </tr>
+        <tr class="phase-1">
+          <td class="lv-num">Lv 4</td>
+          <td>약 25,000</td><td>약 7,000</td><td>1.7%</td>
+          <td><span class="gb gb-unique">유니크 (G4)</span></td>
+          <td><span class="cost-base">50</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">5종 동일</span></div></td>
+        </tr>
+        <tr class="phase-2">
+          <td class="lv-num">Lv 5 ★</td>
+          <td><strong>약 35,000</strong></td><td>약 10,000</td><td>2.3%</td>
+          <td><span class="gb gb-legend">레전드리 (G5)</span></td>
+          <td><span class="cost-base">55</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">공격 속도</span><span class="rec-tag">공격력</span><span class="rec-tag">최소 데미지 배율</span><span class="rec-tag">최대 데미지 배율</span><span class="rec-tag">크리티컬 확률</span><span class="rec-tag new">방어 관통력</span><span class="rec-tag new">보스 데미지</span><span class="rec-tag new">일반 데미지</span></div></td>
+        </tr>
+        <tr class="phase-2">
+          <td class="lv-num">Lv 6</td>
+          <td>약 50,000</td><td>약 15,000</td><td>3.3%</td>
+          <td><span class="gb gb-legend">레전드리 (G5)</span></td>
+          <td><span class="cost-base">60</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-2">
+          <td class="lv-num">Lv 7</td>
+          <td>약 70,000</td><td>약 20,000</td><td>4.7%</td>
+          <td><span class="gb gb-legend">레전드리 (G5)</span></td>
+          <td><span class="cost-base">65</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 8 ★</td>
+          <td><strong>약 100,000</strong></td><td>약 30,000</td><td>6.7%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">68</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 9</td>
+          <td>약 135,000</td><td>약 40,000</td><td>9.0%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">71</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 10</td>
+          <td>약 175,000</td><td>약 40,000</td><td>11.7%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">74</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 11</td>
+          <td>약 230,000</td><td>약 55,000</td><td>15.3%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">77</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 12</td>
+          <td>약 300,000</td><td>약 70,000</td><td>20.0%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">80</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 13</td>
+          <td>약 390,000</td><td>약 90,000</td><td>26.0%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">83</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 14</td>
+          <td>약 500,000</td><td>약 120,000</td><td>33.3%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">86</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 15</td>
+          <td>약 600,000</td><td>약 100,000</td><td>40.0%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">89</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 16</td>
+          <td>약 725,000</td><td>약 120,000</td><td>48.3%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">91</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 17</td>
+          <td>약 870,000</td><td>약 145,000</td><td>58.0%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">93</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 18</td>
+          <td>약 1,040,000</td><td>약 175,000</td><td>69.3%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">95</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 19</td>
+          <td>약 1,250,000</td><td>약 210,000</td><td>83.3%</td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">97</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+        <tr class="phase-3">
+          <td class="lv-num">Lv 20</td>
+          <td><strong>약 1,500,000</strong></td><td>약 250,000</td><td><strong>100%</strong></td>
+          <td><span class="gb gb-mystic">미스틱 (G6)</span></td>
+          <td><span class="cost-base">99</span></td>
+          <td><div class="rec-tags"><span class="rec-tag">8종 동일</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend-strip">
+    <span><span class="ld" style="background:var(--phase1);border:1px solid #bfdbfe;"></span>입문 구간 Lv 1~4</span>
+    <span><span class="ld" style="background:var(--phase2);border:1px solid #bbf7d0;"></span>전환 구간 Lv 5~7 (★ 레전드리 해금)</span>
+    <span><span class="ld" style="background:var(--phase3);border:1px solid #fecaca;"></span>마라톤 구간 Lv 8~20 (★ 미스틱 해금)</span>
+    <span><span class="rec-tag new" style="font-size:11px;">노란색</span> Lv 5 신규 추가 추천 스탯</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     TABLE 03 · 리롤 비용 (잠금 수 × 변환 레벨)
+══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-label">TABLE 03</div>
+  <h2>리롤 비용 테이블 — 잠금 수 × 변환 레벨</h2>
+  <p class="section-desc">잠금 슬롯 수(0~6)와 변환 레벨(1~20)에 따른 1회 리롤 비용(명예의 훈장).</p>
+
+  <div class="formula-box">
+    <div class="f-label">비용 산식</div>
+    <code>비용 = L0 × (1 + 0.5 × k)</code>
+    <p style="margin-top:8px;font-size:12px;color:var(--text-secondary);">L0 = 해당 레벨 기본 비용(잠금 0개) &nbsp;|&nbsp; k = 잠금 슬롯 수(0~6) &nbsp;|&nbsp; 잠금 1개당 L0의 50%씩 선형 가산 &nbsp;|&nbsp; k=6 시 L0의 4배</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="dtbl">
+      <thead>
+        <tr>
+          <th style="width:65px;">레벨</th>
+          <th>잠금 0개<br><small style="font-weight:400;">(기본)</small></th>
+          <th>잠금 1개<br><small style="font-weight:400;">(×1.5)</small></th>
+          <th>잠금 2개<br><small style="font-weight:400;">(×2.0)</small></th>
+          <th>잠금 3개<br><small style="font-weight:400;">(×2.5)</small></th>
+          <th>잠금 4개<br><small style="font-weight:400;">(×3.0)</small></th>
+          <th>잠금 5개<br><small style="font-weight:400;">(×3.5)</small></th>
+          <th>잠금 6개<br><small style="font-weight:400;">(×4.0)</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="phase-1"><td class="lv-num">Lv 1</td><td class="cost-base">20</td><td class="cost-val">30</td><td class="cost-val">40</td><td class="cost-val">50</td><td class="cost-val">60</td><td class="cost-val">70</td><td class="cost-max">80</td></tr>
+        <tr class="phase-1"><td class="lv-num">Lv 2</td><td class="cost-base">30</td><td class="cost-val">45</td><td class="cost-val">60</td><td class="cost-val">75</td><td class="cost-val">90</td><td class="cost-val">105</td><td class="cost-max">120</td></tr>
+        <tr class="phase-1"><td class="lv-num">Lv 3</td><td class="cost-base">40</td><td class="cost-val">60</td><td class="cost-val">80</td><td class="cost-val">100</td><td class="cost-val">120</td><td class="cost-val">140</td><td class="cost-max">160</td></tr>
+        <tr class="phase-1"><td class="lv-num">Lv 4</td><td class="cost-base">50</td><td class="cost-val">75</td><td class="cost-val">100</td><td class="cost-val">125</td><td class="cost-val">150</td><td class="cost-val">175</td><td class="cost-max">200</td></tr>
+        <tr class="phase-2"><td class="lv-num">Lv 5</td><td class="cost-base">55</td><td class="cost-val">83</td><td class="cost-val">110</td><td class="cost-val">138</td><td class="cost-val">165</td><td class="cost-val">193</td><td class="cost-max">220</td></tr>
+        <tr class="phase-2"><td class="lv-num">Lv 6</td><td class="cost-base">60</td><td class="cost-val">90</td><td class="cost-val">120</td><td class="cost-val">150</td><td class="cost-val">180</td><td class="cost-val">210</td><td class="cost-max">240</td></tr>
+        <tr class="phase-2"><td class="lv-num">Lv 7</td><td class="cost-base">65</td><td class="cost-val">98</td><td class="cost-val">130</td><td class="cost-val">163</td><td class="cost-val">195</td><td class="cost-val">228</td><td class="cost-max">260</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 8</td><td class="cost-base">68</td><td class="cost-val">102</td><td class="cost-val">136</td><td class="cost-val">170</td><td class="cost-val">204</td><td class="cost-val">238</td><td class="cost-max">272</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 9</td><td class="cost-base">71</td><td class="cost-val">107</td><td class="cost-val">142</td><td class="cost-val">178</td><td class="cost-val">213</td><td class="cost-val">249</td><td class="cost-max">284</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 10</td><td class="cost-base">74</td><td class="cost-val">111</td><td class="cost-val">148</td><td class="cost-val">185</td><td class="cost-val">222</td><td class="cost-val">259</td><td class="cost-max">296</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 11</td><td class="cost-base">77</td><td class="cost-val">116</td><td class="cost-val">154</td><td class="cost-val">193</td><td class="cost-val">231</td><td class="cost-val">270</td><td class="cost-max">308</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 12</td><td class="cost-base">80</td><td class="cost-val">120</td><td class="cost-val">160</td><td class="cost-val">200</td><td class="cost-val">240</td><td class="cost-val">280</td><td class="cost-max">320</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 13</td><td class="cost-base">83</td><td class="cost-val">125</td><td class="cost-val">166</td><td class="cost-val">208</td><td class="cost-val">249</td><td class="cost-val">291</td><td class="cost-max">332</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 14</td><td class="cost-base">86</td><td class="cost-val">129</td><td class="cost-val">172</td><td class="cost-val">215</td><td class="cost-val">258</td><td class="cost-val">301</td><td class="cost-max">344</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 15</td><td class="cost-base">89</td><td class="cost-val">134</td><td class="cost-val">178</td><td class="cost-val">223</td><td class="cost-val">267</td><td class="cost-val">312</td><td class="cost-max">356</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 16</td><td class="cost-base">91</td><td class="cost-val">137</td><td class="cost-val">182</td><td class="cost-val">228</td><td class="cost-val">273</td><td class="cost-val">319</td><td class="cost-max">364</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 17</td><td class="cost-base">93</td><td class="cost-val">140</td><td class="cost-val">186</td><td class="cost-val">233</td><td class="cost-val">279</td><td class="cost-val">326</td><td class="cost-max">372</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 18</td><td class="cost-base">95</td><td class="cost-val">143</td><td class="cost-val">190</td><td class="cost-val">238</td><td class="cost-val">285</td><td class="cost-val">333</td><td class="cost-max">380</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 19</td><td class="cost-base">97</td><td class="cost-val">146</td><td class="cost-val">194</td><td class="cost-val">243</td><td class="cost-val">291</td><td class="cost-val">340</td><td class="cost-max">388</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 20</td><td class="cost-base">99</td><td class="cost-val">149</td><td class="cost-val">198</td><td class="cost-val">248</td><td class="cost-val">297</td><td class="cost-val">347</td><td class="cost-max">396</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend-strip">
+    <span><strong style="color:var(--text-primary);">굵은 숫자</strong> = 기본 비용(L0)</span>
+    <span><strong style="color:var(--grade-legend);">초록 숫자</strong> = 잠금 6개 최대 비용(L0 × 4)</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     TABLE 04 · 변환 레벨별 등급 출현 확률
+══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-label">TABLE 04</div>
+  <h2>변환 레벨별 등급 출현 확률</h2>
+  <p class="section-desc">어빌리티 변환 레벨 1~20에서 각 등급이 출현할 확률.</p>
+  <div class="note">Lv 5부터 레전드리 등장 / Lv 8부터 미스틱 등장. 각 행의 합계 = 100%.</div>
+
+  <div class="tbl-wrap">
+    <table class="dtbl">
+      <thead>
+        <tr>
+          <th style="width:70px;">레벨</th>
+          <th><span class="gb gb-normal">노말</span></th>
+          <th><span class="gb gb-rare">레어</span></th>
+          <th><span class="gb gb-epic">에픽</span></th>
+          <th><span class="gb gb-unique">유니크</span></th>
+          <th><span class="gb gb-legend">레전드리</span></th>
+          <th><span class="gb gb-mystic">미스틱</span></th>
+          <th style="width:60px;">합계</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="phase-1"><td class="lv-num">Lv 1</td><td class="prob-val">60.00%</td><td class="prob-val">35.00%</td><td class="prob-val">4.70%</td><td class="prob-val">0.30%</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-1"><td class="lv-num">Lv 2</td><td class="prob-val">59.30%</td><td class="prob-val">35.00%</td><td class="prob-val">5.00%</td><td class="prob-val">0.70%</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-1"><td class="lv-num">Lv 3</td><td class="prob-val">50.00%</td><td class="prob-val">35.00%</td><td class="prob-val">13.50%</td><td class="prob-val">1.50%</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-1"><td class="lv-num">Lv 4</td><td class="prob-val">40.00%</td><td class="prob-val">35.00%</td><td class="prob-val">22.50%</td><td class="prob-val">2.50%</td><td class="none-cell">—</td><td class="none-cell">—</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-2"><td class="lv-num">Lv 5</td><td class="prob-val">30.00%</td><td class="prob-val">32.00%</td><td class="prob-val">34.30%</td><td class="prob-val">3.50%</td><td class="prob-val prob-low">0.20%</td><td class="none-cell">—</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-2"><td class="lv-num">Lv 6</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">39.00%</td><td class="prob-val">3.60%</td><td class="prob-val prob-low">0.40%</td><td class="none-cell">—</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-2"><td class="lv-num">Lv 7</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">38.50%</td><td class="prob-val">3.70%</td><td class="prob-val prob-low">0.80%</td><td class="none-cell">—</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 8</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">38.33%</td><td class="prob-val">3.65%</td><td class="prob-val prob-low">1.00%</td><td class="prob-val prob-low">0.02%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 9</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">38.28%</td><td class="prob-val">3.60%</td><td class="prob-val prob-low">1.09%</td><td class="prob-val prob-low">0.03%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 10</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">38.23%</td><td class="prob-val">3.55%</td><td class="prob-val prob-low">1.18%</td><td class="prob-val prob-low">0.04%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 11</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">38.17%</td><td class="prob-val">3.50%</td><td class="prob-val prob-low">1.27%</td><td class="prob-val prob-low">0.06%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 12</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">38.11%</td><td class="prob-val">3.45%</td><td class="prob-val prob-low">1.36%</td><td class="prob-val prob-low">0.08%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 13</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">38.05%</td><td class="prob-val">3.40%</td><td class="prob-val prob-low">1.45%</td><td class="prob-val prob-low">0.10%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 14</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">37.99%</td><td class="prob-val">3.35%</td><td class="prob-val prob-low">1.54%</td><td class="prob-val prob-low">0.12%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 15</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">37.93%</td><td class="prob-val">3.30%</td><td class="prob-val prob-low">1.63%</td><td class="prob-val prob-low">0.14%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 16</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">37.87%</td><td class="prob-val">3.25%</td><td class="prob-val prob-mid">1.72%</td><td class="prob-val prob-low">0.16%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 17</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">37.81%</td><td class="prob-val">3.20%</td><td class="prob-val prob-mid">1.81%</td><td class="prob-val prob-low">0.18%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 18</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">37.75%</td><td class="prob-val">3.15%</td><td class="prob-val prob-mid">1.90%</td><td class="prob-val prob-low">0.20%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 19</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">37.69%</td><td class="prob-val">3.10%</td><td class="prob-val prob-mid">1.99%</td><td class="prob-val prob-low">0.22%</td><td class="prob-val">100%</td></tr>
+        <tr class="phase-3"><td class="lv-num">Lv 20</td><td class="prob-val">25.00%</td><td class="prob-val">32.00%</td><td class="prob-val">37.63%</td><td class="prob-val">3.05%</td><td class="prob-val prob-mid">2.08%</td><td class="prob-val prob-mid">0.24%</td><td class="prob-val">100%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend-strip">
+    <span><span class="ld" style="background:var(--phase1);border:1px solid #bfdbfe;"></span>입문 구간 Lv 1~4</span>
+    <span><span class="ld" style="background:var(--phase2);border:1px solid #bbf7d0;"></span>전환 구간 Lv 5~7 (레전드리 해금)</span>
+    <span><span class="ld" style="background:var(--phase3);border:1px solid #fecaca;"></span>마라톤 구간 Lv 8~20 (미스틱 해금, 이후 확률 누적 상승)</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     TABLE 05 · UI 데이터 테이블
+══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-label">TABLE 05</div>
+  <h2>UI 데이터 테이블</h2>
+  <p class="section-desc">용사의 힘 인게임 UI 구성 요소별 명세. 좌측 패널(용사의 힘)과 우측 패널(어빌리티) 기준으로 분류.</p>
+
+  <div style="margin-top:16px; border:1px solid var(--border); border-radius:10px; overflow:hidden; display:inline-block; max-width:100%;">
+    <img src="../images/hero_power_ability_ui.png" alt="용사의 힘 어빌리티 인게임 UI 스크린샷" style="display:block; max-width:100%; height:auto;" />
+  </div>
+  <div style="margin-top:6px; font-size:11px; color:var(--text-muted);">▲ 용사의 힘 어빌리티 인게임 UI 스크린샷 (실제 플레이 화면 기준)</div>
+
+  <div class="note" style="margin-top:14px;">직접 설명 기준으로 행을 순차 추가 중. 윈도우 ID / 요소 ID는 인게임 변수명 기준.</div>
+
+  <div style="display:flex;align-items:flex-start;gap:14px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:14px 18px;margin-top:14px;">
+    <div style="font-size:18px;flex-shrink:0;">📋</div>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:#0369a1;margin-bottom:5px;">TC 문서 안내</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+        각 UI 요소에 대한 상세 테스트 케이스(사전 조건 / 테스트 스텝 / 기대 결과)는 별도 TC 시트에 작성되어 있습니다.<br>
+        더 상세한 설명은 <a href="step4_testcase.html" style="color:var(--accent);font-weight:600;text-decoration:none;">Step 4 Test Case</a>에서 확인할 수 있습니다.
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="dtbl">
+      <thead>
+        <tr>
+          <th style="width:36px;">No</th>
+          <th style="min-width:160px;">윈도우 ID</th>
+          <th style="min-width:160px;">요소명<br><small style="font-weight:400;">(요소 ID)</small></th>
+          <th style="min-width:70px;">유형</th>
+          <th style="min-width:180px;">표시 내용</th>
+          <th style="min-width:110px;">상태 조건</th>
+          <th style="min-width:200px;">역할 설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>01</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerMainWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">GuideTipButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">"?" 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">용사의 힘 가이드 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>02</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerMainWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-HeroPowerMainWindowText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">"용사의 힘"</td>
+          <td>항상 표시</td>
+          <td class="td-left">용사의 힘 타이틀 텍스트</td>
+        </tr>
+        <tr>
+          <td>03</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerMainWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-CurrencyButton-001</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">용사의 증표 재화 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 용사의 증표 재화 표시 버튼</td>
+        </tr>
+        <tr>
+          <td>04</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerMainWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-CurrencyButton-002</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">명예의 훈장 재화 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 명예의 훈장의 증표 재화 표시 버튼</td>
+        </tr>
+        <tr>
+          <td>05</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Image-HeroPowerPanelImage</small></td>
+          <td><span class="cat">이미지</span></td>
+          <td class="td-left">용사의 힘 배경 이미지</td>
+          <td>항상 표시</td>
+          <td class="td-left">용사의 힘 배경 이미지</td>
+        </tr>
+        <tr>
+          <td>06</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-HeroPowerPanelText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">"용사의 힘"</td>
+          <td>항상 표시</td>
+          <td class="td-left">용사의 힘 배경 타이틀 텍스트</td>
+        </tr>
+        <tr>
+          <td>07</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-HeroPowerPanelDescriptionText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">개별 능력치를 모두 강화하여 용사의 힘 단계를 성장시킬 수 있습니다.</td>
+          <td>항상 표시</td>
+          <td class="td-left">용사의 힘 배경 설명 텍스트</td>
+        </tr>
+        <tr>
+          <td>08</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-UnionPowerLevelText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">"{Union_Power_Level}"단계</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 용사의 힘 레벨</td>
+        </tr>
+        <tr>
+          <td>09</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Silder-UnionPowerTotalSlotLevelText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">용사의 힘 승급 레벨</td>
+          <td>항상 표시</td>
+          <td class="td-left">[9999/9999] 승급 강화 횟수 표시</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Silder-UnionPowerLevelSlider</small></td>
+          <td><span class="cat">슬라이드</span></td>
+          <td class="td-left">용사의 힘 승급 레벨 슬라이드</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 용사의 힘 강화 표시 슬라이드</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-UpgradePowerLevelButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">용사의 힘 승급 버튼</td>
+          <td>용사의 힘 승급 가능 상태</td>
+          <td class="td-left">승급 정보 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-CloseUpgradePowerLevelButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">용사의 힘 비활성화된 승급 버튼</td>
+          <td>용사의 힘 승급 불가능 상태</td>
+          <td class="td-left">용사의 힘 비활성화된 승급 버튼</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-WaitPowerLevelUpButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">용사의 힘 승급 가속 버튼</td>
+          <td>용사의 힘 승급 진행 상태</td>
+          <td class="td-left">승급 가속 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-StatNameText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">공격력</td>
+          <td>항상 표시</td>
+          <td class="td-left">공격력 강화 텍스트</td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-BeforeStatText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">현재 추가 공격력 스탯</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 추가 공격력 스탯 텍스트</td>
+        </tr>
+        <tr>
+          <td>16</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-AfterStatText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">"&gt;&gt; {UI_AfterStatText}"</td>
+          <td>공격력 강화가 남은 상태</td>
+          <td class="td-left">&gt;&gt; 9999 표시</td>
+        </tr>
+        <tr>
+          <td>17</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Slider-HeroPowerSlotLevelSlider-001</small></td>
+          <td><span class="cat">슬라이드</span></td>
+          <td class="td-left">공격력 강화 레벨 슬라이드</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 공격력 강화 레벨 슬라이드</td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-CurrentLevelText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">공격력 강화 레벨</td>
+          <td>항상 표시</td>
+          <td class="td-left">[9999/9999] 승급 강화 횟수 표시</td>
+        </tr>
+        <tr>
+          <td>19</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-UpgradeCostText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">공격력 강화 재화</td>
+          <td>공격력 강화가 남은 상태</td>
+          <td class="td-left">공격력 강화에 소모되는 용사의 증표 재화 표시</td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-UpgradeButton-001</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">공격력 강화 버튼</td>
+          <td>공격력 강화가 가능한 상태</td>
+          <td class="td-left">공격력 강화 버튼</td>
+        </tr>
+        <tr>
+          <td>21</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerPanelComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-MaxLevelButton-001</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">공격력 강화 MAX 버튼</td>
+          <td>공격력 강화가 모두 완료된 상태</td>
+          <td class="td-left">공격력 강화 MAX 버튼</td>
+        </tr>
+        <tr>
+          <td>22</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-HeroPowerAbilityPanelText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">"어빌리티"</td>
+          <td>항상 표시</td>
+          <td class="td-left">어빌리티 타이틀 텍스트</td>
+        </tr>
+        <tr>
+          <td>23</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-SelectPresetPopupButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">어빌리티 프리셋 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">어빌리티 프리셋 선택 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>24</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-ChangePresetNameButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">어빌리티 프리셋 이름 변경 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">어빌리티 프리셋 이름 변경 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>25</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-AbilityLevelText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">어빌리티 변환 레벨 "{Ability_Level_Text}"</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 어빌리티 변환 레벨 표시</td>
+        </tr>
+        <tr>
+          <td>26</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-AbilityLevelInfoButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">"i"</td>
+          <td>항상 표시</td>
+          <td class="td-left">어빌리티 확률 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>27</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Slider-AbilityLevelUpSlider</small></td>
+          <td><span class="cat">슬라이드</span></td>
+          <td class="td-left">어빌리티 변환 레벨 경험치 슬라이드</td>
+          <td>항상 표시</td>
+          <td class="td-left">현재 어빌리티 변환 레벨 경험치 슬라이드</td>
+        </tr>
+        <tr>
+          <td>28</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-AbilityChangeButton-001</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">옵션 변경 버튼</td>
+          <td class="td-left">어빌리티 슬롯이 1개 이상 개방 상태<br>그리고 잠금 해체 상태</td>
+          <td class="td-left">어빌리티 옵션 변경 버튼</td>
+        </tr>
+        <tr>
+          <td>29</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-AbilityChangeButton-002</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">비활성화된 옵션 변경 버튼</td>
+          <td class="td-left">어빌리티 슬롯이 모두 미개방 상태<br>또는 잠금 상태</td>
+          <td class="td-left">비활성화된 옵션 변경 버튼</td>
+        </tr>
+        <tr>
+          <td>30</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-AbilityChangeCostRequireText</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">옵션 변경 재화</td>
+          <td class="td-left">어빌리티 슬롯이 1개 이상 개방 상태<br>그리고 잠금 해체 상태</td>
+          <td class="td-left">어빌리티 옵션 변경에 소모되는 명예의 훈장 재화 표시</td>
+        </tr>
+        <tr>
+          <td>31</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1ToggleButton-SetPresetToggleButton</small></td>
+          <td><span class="cat">토글버튼</span></td>
+          <td class="td-left">어빌리티 프리셋 적용 토글 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">기본값 OFF 상태, 어빌리티 프리셋 적용 토글 버튼</td>
+        </tr>
+        <tr>
+          <td>32</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-SelectOptionButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">선호 옵션 지정 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">옵션 선택 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>33</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-SelectedOptionValueText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">선택한 옵션 목록 개수 만큼 표시</td>
+          <td>선호 옵션 1개 이상 선택 상태</td>
+          <td class="td-left">선택한 옵션 목록 개수 만큼 텍스트 표시</td>
+        </tr>
+        <tr>
+          <td>34</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-SelectedOptionValueText-002</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">"All"</td>
+          <td>선호 옵션 모두 선택 상태</td>
+          <td class="td-left">선택한 옵션 모두 선택된 표시</td>
+        </tr>
+        <tr>
+          <td>35</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityPanelWindow</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-OpenSaveOptionButton</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">저장 관리 버튼</td>
+          <td>항상 표시</td>
+          <td class="td-left">어빌리티 저장 관리 팝업 창 호출</td>
+        </tr>
+        <tr>
+          <td>36</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-SlotOpenConditionText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">용사의 힘 1단계 달성 시 개방</td>
+          <td>용사의 힘 2단계 레벨 미달성 상태</td>
+          <td class="td-left">어빌리티 슬롯 개방 조건 텍스트 표시</td>
+        </tr>
+        <tr>
+          <td>37</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-StatText-001-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">새로운 어빌리티를 부여할 수 있습니다.</td>
+          <td class="td-left">어빌리티 슬롯 1단계 개봉 상태<br>그리고 어빌리티 옵션이 없는 상태</td>
+          <td class="td-left">어빌리티 슬롯에 옵션이 존재하지 않는 텍스트 표시</td>
+        </tr>
+        <tr>
+          <td>38</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Image-UnionAbilityGradeIconImage-001</small></td>
+          <td><span class="cat">이미지</span></td>
+          <td class="td-left">어빌리티 등급 아이콘</td>
+          <td>어빌리티 슬롯 1단계 개봉 상태</td>
+          <td class="td-left">어빌리티 슬롯 등급 아이콘</td>
+        </tr>
+        <tr>
+          <td>39</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-UnionAbilityGradeText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">어빌리티 등급</td>
+          <td>어빌리티 슬롯 1단계 개봉 상태</td>
+          <td class="td-left">어빌리티 슬롯 등급 텍스트</td>
+        </tr>
+        <tr>
+          <td>40</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-StatText-001-002</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">어빌리티 옵션 내용</td>
+          <td class="td-left">어빌리티 슬롯 1단계 개봉 상태<br>그리고 어빌리티 옵션을 받은 상태</td>
+          <td class="td-left">어빌리티 옵션 내용 텍스트</td>
+        </tr>
+        <tr>
+          <td>41</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-StatRangeValueText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">(어빌리티 옵션 최소 ~ 어빌리티 옵션 최대 값)</td>
+          <td class="td-left">어빌리티 슬롯 1단계 개봉 상태<br>그리고 어빌리티 옵션을 받은 상태</td>
+          <td class="td-left">어빌리티 옵션 (옵션 최소 값 ~ 옵션 최대 값) 텍스트 표시</td>
+        </tr>
+        <tr>
+          <td>42</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Text-StatValueText-001</small></td>
+          <td><span class="cat">텍스트</span></td>
+          <td class="td-left">어빌리티 옵션 값</td>
+          <td class="td-left">어빌리티 슬롯 1단계 개봉 상태<br>그리고 어빌리티 옵션을 받은 상태</td>
+          <td class="td-left">어빌리티 옵션 값 텍스트 표시</td>
+        </tr>
+        <tr>
+          <td>43</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-LockButton-001-001</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">잠금 해체된 자물쇠 버튼</td>
+          <td class="td-left">어빌리티 슬롯 1단계 개봉 상태<br>어빌리티 슬롯 1단계 잠금 해체 상태</td>
+          <td class="td-left">잠금 해체된 자물쇠 버튼</td>
+        </tr>
+        <tr>
+          <td>44</td>
+          <td class="td-left"><code style="font-size:11px;">HeroPowerAbilityOptionComponent-001</code></td>
+          <td class="td-left"><small style="color:var(--text-muted);">C1Button-LockButton-001-002</small></td>
+          <td><span class="cat">버튼</span></td>
+          <td class="td-left">잠긴 자물쇠 버튼</td>
+          <td class="td-left">어빌리티 슬롯 1단계 개봉 상태<br>어빌리티 슬롯 1단계 잠금 상태</td>
+          <td class="td-left">잠긴 자물쇠 버튼</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="legend-strip" style="margin-top:14px;">
+    <span><span class="cat">버튼</span> 인터랙션 발생 요소</span>
+    <span><span class="cat">텍스트</span> 정보 표시 전용</span>
+    <span><span class="cat">아이콘</span> 시각적 상태 표현</span>
+    <span><span class="cat">슬라이드 바</span> 진행도 시각화</span>
+    <span><span class="cat">토글버튼</span> 토글 버튼</span>
+    <span><span class="cat">슬롯</span> 어빌리티 슬롯 단위</span>
+  </div>
+
+
+</section>
+
+</div>
+
+<footer>메이플 키우기 &nbsp;|&nbsp; 용사의 힘 어빌리티 QA 포트폴리오 &nbsp;|&nbsp; Step 2 / 4 &nbsp;|&nbsp; 데이터 테이블</footer>
+
+<script>
+(function () {
+  document.querySelectorAll('.th-tooltip').forEach(function (el) {
+    var box = el.querySelector('.tip-box');
+    if (!box) return;
+    el.addEventListener('mouseenter', function () {
+      var r = el.getBoundingClientRect();
+      var left = r.left + r.width / 2 - 120;
+      if (left < 8) left = 8;
+      if (left + 240 > window.innerWidth - 8) left = window.innerWidth - 248;
+      box.style.top  = (r.bottom + 6) + 'px';
+      box.style.left = left + 'px';
+      box.classList.add('tip-active');
+    });
+    el.addEventListener('mouseleave', function () {
+      box.classList.remove('tip-active');
+    });
+  });
+})();
+</script>
+</body>
+</html>

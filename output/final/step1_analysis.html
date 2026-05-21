@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>콘텐츠 분석서 | 메이플 키우기 용사의 힘 어빌리티</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --accent: #4361ee;
+      --accent-light: #eef0fd;
+      --tier-s: #7c3aed;
+      --tier-s-bg: #f5f3ff;
+      --tier-a: #d97706;
+      --tier-a-bg: #fffbeb;
+      --tier-b: #2563eb;
+      --tier-b-bg: #eff6ff;
+      --strength: #059669;
+      --strength-bg: #ecfdf5;
+      --weakness: #dc2626;
+      --weakness-bg: #fef2f2;
+      --lock: #d97706;
+      --lock-bg: #fffbeb;
+      --level: #2563eb;
+      --level-bg: #eff6ff;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.75; font-size: 15px; }
+
+    /* ── Header ── */
+    .site-header { background: linear-gradient(135deg, #1a1f4e 0%, #2d3578 50%, #4361ee 100%); color: #fff; padding: 48px 24px 40px; text-align: center; }
+    .site-header .badge { display: inline-block; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); border-radius: 20px; padding: 4px 14px; font-size: 12px; letter-spacing: .08em; margin-bottom: 16px; }
+    .site-header h1 { font-size: clamp(20px, 4vw, 30px); font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+    .site-header .subtitle { font-size: 14px; opacity: .75; margin-bottom: 24px; }
+
+    /* ── Nav pills ── */
+    .nav-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .nav-pills a { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; text-decoration: none; padding: 6px 16px; border-radius: 20px; font-size: 13px; transition: background .2s; }
+    .nav-pills a.active, .nav-pills a:hover { background: rgba(255,255,255,.28); }
+
+    /* ── Layout ── */
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+    /* ── Portfolio flow ── */
+    .portfolio-flow { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .pf-title { font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: .05em; margin-bottom: 14px; }
+    .pf-steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pf-step { flex: 1; min-width: 140px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; text-decoration: none; transition: box-shadow .15s, border-color .15s; }
+    .pf-step:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(67,97,238,.12); }
+    .pf-step.pf-active { background: var(--accent-light); border-color: #a5b4fc; }
+    .pf-num { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: .08em; margin-bottom: 3px; }
+    .pf-name { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+    .pf-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+    .pf-active .pf-num { color: var(--accent); }
+    .pf-active .pf-name { color: var(--accent); }
+    .pf-arrow { font-size: 20px; color: var(--border); flex-shrink: 0; }
+
+    /* ── TOC ── */
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 36px; box-shadow: var(--shadow); }
+    .toc h2 { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: .06em; margin-bottom: 12px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 6px; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 14px; }
+    .toc a:hover { text-decoration: underline; }
+    .toc-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 6px; margin-left: 6px; vertical-align: middle; }
+    .toc-badge.new-lock { background: #fef3c7; color: #92400e; }
+    .toc-badge.new-level { background: var(--level-bg); color: var(--level); }
+
+    /* ── Section card ── */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px 36px; margin-bottom: 28px; box-shadow: var(--shadow); scroll-margin-top: 80px; }
+    #s1 {
+      background-image:
+        linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 160px, #ffffff 220px),
+        url('../images/hero_power_bg.png');
+      background-size: 100% auto, 100% auto;
+      background-position: top center, top center;
+      background-repeat: no-repeat, no-repeat;
+      background-color: #ffffff;
+      padding-top: 0;
+    }
+    #s1 .s1-inner {
+      padding-top: 200px;
+      padding-left: 36px;
+      padding-right: 36px;
+      padding-bottom: 32px;
+    }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 6px; }
+    .section h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--accent-light); }
+    .section h3 { font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 22px 0 10px; }
+    .section h3:first-of-type { margin-top: 0; }
+    .section p { color: var(--text-secondary); margin-bottom: 12px; }
+    .section p:last-child { margin-bottom: 0; }
+
+    mark { background: var(--accent-light); color: var(--accent); padding: 1px 5px; border-radius: 4px; font-weight: 600; }
+
+    /* ── Cycle diagram ── */
+    .cycle-wrap { display: flex; gap: 10px; align-items: flex-start; margin: 20px 0 0; }
+    .cycle-main { flex: 1; display: flex; flex-direction: column; gap: 0; }
+    .cycle-node { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+    .cycle-node.highlight { background: #e0e7ff; border-color: #3730a3; }
+    .cycle-node.complete  { background: #ecfdf5; border-color: var(--strength); }
+    .cycle-node.multi     { background: var(--tier-s-bg); border-color: var(--tier-s); }
+    .cycle-node-icon { flex-shrink: 0; }
+    .cycle-node-text .cn-label { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+    .cycle-node-text .cn-sub   { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .cycle-arrow-v { text-align: center; font-size: 18px; color: var(--accent); padding: 1px 0; }
+    .cycle-sidebar { display: flex; flex-direction: column; align-items: center; padding-top: 128px; }
+    .cycle-sidebar .loop-label { writing-mode: vertical-rl; letter-spacing: .05em; color: var(--accent); font-size: 10px; font-weight: 600; padding: 6px 0; border-right: 2px dashed var(--accent); margin-right: 1px; }
+    .cycle-sidebar .loop-arrow { font-size: 16px; color: var(--accent); margin-top: 4px; }
+    @media (max-width: 600px) { .cycle-sidebar { display: none; } }
+
+    .cycle-level-meta { margin-top: 10px; background: var(--level-bg); border: 2px dashed var(--level); border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: #1e3a8a; }
+    .clm-badge { background: var(--level); color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+
+    /* ── Unit list ── */
+    .unit-list { list-style: none; padding: 0; margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+    .unit-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--text-secondary); }
+    .unit-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 9px; }
+    .unit-dot.level { background: var(--level); }
+
+    /* ── Insight / note boxes ── */
+    .insight-box { background: linear-gradient(135deg, #f0f4ff, #e8edff); border-left: 4px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 18px 22px; margin: 18px 0; }
+    .insight-box .insight-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .insight-box p { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+    .insight-box p:last-child { margin-bottom: 0; }
+    .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #92400e; margin: 16px 0; display: flex; gap: 8px; }
+    .note::before { content: "⚠️"; flex-shrink: 0; }
+    .pending-note { background: #f1f5f9; border: 1px dashed #94a3b8; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--text-muted); margin: 10px 0; display: flex; align-items: center; gap: 6px; }
+    .pending-note::before { content: "🔜"; flex-shrink: 0; }
+
+    /* ── Tier table ── */
+    .tier-table-wrap { overflow-x: auto; margin: 16px 0; }
+    .tier-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .tier-table th { background: #f7f8fb; font-weight: 600; color: var(--text-secondary); padding: 10px 14px; border: 1px solid var(--border); text-align: left; white-space: nowrap; }
+    .tier-table td { padding: 11px 14px; border: 1px solid var(--border); vertical-align: top; word-break: keep-all; line-height: 1.7; }
+    .tier-table tr:hover td { background: #fafbff; }
+    .tier-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .tier-low  { background: var(--tier-b-bg);   color: var(--tier-b); }
+    .tier-mid  { background: var(--tier-a-bg);   color: var(--tier-a); }
+    .tier-high { background: var(--strength-bg); color: var(--strength); }
+    .tier-top  { background: var(--tier-s-bg);   color: var(--tier-s); }
+    .prob-chip { font-family: 'Courier New', monospace; font-size: 12px; background: #f1f5f9; border-radius: 4px; padding: 2px 6px; color: #334155; }
+
+    /* ── Lock section ── */
+    .lock-section { border: 2px solid #fde68a; background: #fffdf0; }
+    .lock-section h2 { border-bottom-color: #fde68a; }
+    .lock-subsection { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+    .lock-subsection h3 { margin-top: 0; color: #92400e; font-size: 14px; }
+    .sunk-cost-chain { display: flex; align-items: center; flex-wrap: wrap; gap: 0; margin: 12px 0; background: #fef9eb; border-radius: 10px; padding: 12px 10px; overflow-x: auto; }
+    .scc-step { text-align: center; min-width: 84px; padding: 7px 5px; background: #fff; border: 1px solid #fde68a; border-radius: 7px; font-size: 11px; color: #78350f; font-weight: 600; flex-shrink: 0; }
+    .scc-arrow { font-size: 14px; color: #d97706; padding: 0 4px; flex-shrink: 0; }
+    .lock-points { list-style: none; padding: 0; margin-top: 10px; display: flex; flex-direction: column; gap: 9px; }
+    .lock-points li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--text-secondary); }
+    .lp-icon { width: 22px; height: 22px; border-radius: 50%; background: #fef3c7; color: #b45309; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .relay-box { background: linear-gradient(135deg, #fef9eb, #fef3c7); border-left: 4px solid var(--lock); border-radius: 0 10px 10px 0; padding: 14px 18px; margin-top: 14px; }
+    .relay-box p { font-size: 13px; color: #78350f; margin-bottom: 8px; }
+
+    /* ── Level section ── */
+    .level-section { border: 2px solid #bfdbfe; background: #f8fbff; }
+    .level-section h2 { border-bottom-color: #bfdbfe; }
+    .level-subsection { background: var(--level-bg); border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+    .level-subsection h3 { margin-top: 0; color: #1e3a8a; font-size: 14px; }
+    .level-table-wrap { overflow: visible; margin: 12px 0; }
+    .level-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .level-table th { background: #dbeafe; font-weight: 600; color: #1e40af; padding: 9px 12px; border: 1px solid #bfdbfe; text-align: left; }
+    .level-table td { padding: 10px 12px; border: 1px solid #bfdbfe; vertical-align: top; font-size: 13px; color: var(--text-secondary); }
+    .level-phase-1 td { background: #eff6ff; }
+    .level-phase-2 td { background: #f0fdf4; }
+    .level-phase-3 td { background: #fef2f2; }
+    .lv-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .lv-badge.open1 { background: #dbeafe; color: #1e40af; }
+    .lv-badge.open2 { background: #dcfce7; color: #166534; }
+    .lv-badge.prob  { background: #fef3c7; color: #92400e; }
+
+    .ratio-bar { display: flex; height: 26px; border-radius: 13px; overflow: hidden; margin: 12px 0; font-size: 12px; font-weight: 700; color: #fff; }
+    .ratio-bar .rb-open { background: #3b82f6; flex: 7; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .ratio-bar .rb-prob  { background: #d97706; flex: 13; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+    .quote-flow { background: #f8f9fa; border-radius: 10px; padding: 14px; margin: 12px 0; display: flex; flex-direction: column; gap: 6px; }
+    .qf-bad  { background: var(--weakness-bg); border-left: 3px solid var(--weakness); padding: 8px 12px; border-radius: 4px; font-size: 13px; color: #991b1b; }
+    .qf-good { background: var(--strength-bg); border-left: 3px solid var(--strength); padding: 8px 12px; border-radius: 4px; font-size: 13px; color: #065f46; }
+    .qf-arrow { text-align: center; font-size: 20px; color: var(--text-muted); }
+
+    .comparison-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    .comparison-table th { background: #f7f8fb; font-weight: 600; color: var(--text-secondary); padding: 9px 12px; border: 1px solid var(--border); text-align: left; }
+    .comparison-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+    .comparison-table .col-lock { background: #fffbeb; }
+    .comparison-table .col-lv   { background: var(--level-bg); }
+
+    .key-point-8lv { background: #fef3c7; border: 2px solid #d97706; border-radius: 10px; padding: 12px 16px; margin: 14px 0; font-size: 13px; color: #78350f; }
+    .key-point-8lv strong { display: block; font-size: 14px; margin-bottom: 6px; color: #92400e; }
+
+    /* ── Tier option cards ── */
+    .tier-cards { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; }
+    .tier-card { border-radius: 10px; padding: 16px 20px; border: 1px solid transparent; }
+    .tier-card.s-tier { background: var(--tier-s-bg); border-color: #c4b5fd; }
+    .tier-card.b-tier { background: #fafafa; border-color: var(--border); }
+    .tier-card .tc-label { font-size: 12px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .tc-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+    .tc-badge.s { background: var(--tier-s); color: #fff; }
+    .tc-badge.b { background: #e2e8f0; color: #475569; }
+    .tier-card ul { list-style: none; padding: 0; }
+    .tier-card li { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; display: flex; align-items: flex-start; gap: 6px; }
+    .tier-card li img { margin-top: 2px; }
+
+    /* ── Economy cards ── */
+    .econ-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .econ-cards-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 14px; }
+    @media (max-width: 680px) { .econ-cards, .econ-cards-3 { grid-template-columns: 1fr; } }
+    .econ-card { border-radius: 10px; padding: 16px 18px; border: 1px solid var(--border); }
+    .econ-card .ec-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .econ-card.free  { background: #f0fdf4; border-color: #bbf7d0; }
+    .econ-card.free  .ec-title { color: var(--strength); }
+    .econ-card.whale { background: var(--lock-bg); border-color: #fde68a; }
+    .econ-card.whale .ec-title { color: #b45309; }
+    .econ-card.lvprio { background: var(--tier-s-bg); border-color: #c4b5fd; }
+    .econ-card.lvprio .ec-title { color: var(--tier-s); }
+    .econ-card p { font-size: 13px; color: var(--text-secondary); }
+
+    /* ── SWOT ── */
+    .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    @media (max-width: 600px) { .swot-grid { grid-template-columns: 1fr; } }
+    .swot-card { border-radius: 10px; padding: 16px 18px; border-left: 4px solid; }
+    .swot-card.strength { background: var(--strength-bg); border-color: var(--strength); }
+    .swot-card.weakness { background: var(--weakness-bg); border-color: var(--weakness); }
+    .swot-card .sw-label { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+    .swot-card.strength .sw-label { color: var(--strength); }
+    .swot-card.weakness .sw-label { color: var(--weakness); }
+    .swot-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+    .swot-card ul { padding-left: 16px; font-size: 13px; color: var(--text-secondary); }
+    .swot-card li { margin-bottom: 6px; }
+
+    /* ── Follow-up ── */
+    .followup-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 14px; }
+    #s8, #s9 { width: 100vw; max-width: 1600px; position: relative; left: 50%; transform: translateX(-50%); padding-left: 40px; padding-right: 40px; box-sizing: border-box; }
+    .followup-card { display: block; text-align: center; }
+    .fc-body { padding: 0 4px; }
+    @media (max-width: 640px) { .followup-cards { grid-template-columns: 1fr; } }
+    .followup-card { background: var(--accent-light); border: 1px solid #c7d2fe; border-radius: 10px; padding: 16px 16px; text-align: center; text-decoration: none; transition: transform .15s, box-shadow .15s; overflow: hidden; }
+    .followup-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(67,97,238,.15); }
+    .followup-card .fc-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .followup-card .fc-desc { font-size: 11px; color: var(--text-muted); }
+    .fc-thumb { width: 100%; border-radius: 6px; margin-bottom: 10px; display: block; }
+    .followup-card > .fc-thumb { height: 360px; object-fit: contain; }
+    .fc-thumb-wrap { position: relative; width: 100%; height: 360px; overflow: hidden; margin-bottom: 10px; border-radius: 6px; }
+    .fc-thumb-wrap .fc-thumb { position: absolute; width: 78%; height: auto; margin: 0; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    .fc-thumb-wrap .fc-thumb:first-child { top: 0; left: 0; z-index: 1; }
+    .fc-thumb-wrap .fc-thumb:last-child  { top: 15%; right: 0; z-index: 2; }
+    .fc-no-thumb { height: 360px; display: flex; align-items: center; justify-content: center; background: #e8ecff; border-radius: 6px; margin-bottom: 10px; font-size: 11px; color: var(--text-muted); }
+    .fc-thumb-wrap-4 { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+    .fc-thumb-row4 { position: relative; height: 220px; overflow: hidden; border-radius: 6px; }
+    .fc-thumb-row4 img { position: absolute; width: 72%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+    .fc-thumb-row4 img:first-child { top: 0; left: 0; z-index: 1; }
+    .fc-thumb-row4 img:last-child  { top: 30%; right: 0; z-index: 2; }
+    .fc-thumb-row4:first-child img:last-child { top: 38%; }
+
+    /* ── Game icons ── */
+    .game-icon-lg      { width: 40px; height: 40px; object-fit: contain; display: block; margin: 0 auto 4px; }
+    .game-icon-sm      { width: 33px; height: 33px; object-fit: contain; vertical-align: middle; flex-shrink: 0; }
+    .multi-icon        { display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; flex-shrink: 0; }
+    #s6 .game-icon-sm, #s7 .game-icon-sm { width: 40px; height: 40px; }
+    .game-icon-cycle   { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+    .game-icon-content { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
+    .cycle-content-icons { display: flex; align-items: center; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+    .cycle-content-icons .ci-name { font-size: 11px; color: var(--text-secondary); margin-right: 6px; white-space: nowrap; }
+    .ci-text-only { border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; margin-right: 0; }
+
+    /* ── Basis note ── */
+    .basis-note { display: flex; gap: 12px; align-items: flex-start; background: #f8faff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
+    .basis-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .basis-note strong { color: var(--accent); font-size: 13px; }
+
+    /* ── S4 inline icons ── */
+    .s4-icons { display: inline-flex; align-items: center; gap: 8px; margin-left: 20px; vertical-align: middle; }
+    .s4-icons img { width: 53px; height: 53px; object-fit: contain; }
+
+    /* ── S3 grade icons ── */
+    .s3-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .s3-header h2 { flex: 1; min-width: 0; }
+    .s3-grade-icons { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-top: 4px; }
+    .s3-grade-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .s3-grade-item img { width: 40px; height: 40px; object-fit: contain; }
+    .s3-grade-item span { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 28px 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 20px; }
+
+    /* ── Tooltip ── */
+    .th-tooltip { position: relative; display: inline-flex; align-items: center; gap: 4px; }
+    .th-tooltip .tip-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 15px; height: 15px; border-radius: 50%;
+      background: var(--text-muted); color: #fff;
+      font-size: 10px; font-weight: 700; cursor: default; flex-shrink: 0;
+    }
+    .th-tooltip .tip-box {
+      display: none; position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: #1e293b; color: #e2e8f0; font-size: 12px; font-weight: 400;
+      white-space: nowrap; padding: 7px 11px; border-radius: 6px; z-index: 99;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25); line-height: 1.5;
+    }
+    .th-tooltip .tip-box::before {
+      content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-bottom-color: #1e293b;
+    }
+    .th-tooltip:hover .tip-box { display: block; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="badge">QA PORTFOLIO | STEP 1 / 4</div>
+  <h1>📊 용사의 힘 어빌리티 및 프리셋<br>시스템 심층 분석</h1>
+  <p class="subtitle">메이플 키우기 | 콘텐츠 분석서</p>
+  <nav class="nav-pills">
+    <a href="step1_analysis.html" class="active">① 콘텐츠 분석서</a>
+    <a href="step2_table.html">② 데이터 테이블</a>
+    <a href="step3_simulator.html">③ 시뮬레이터</a>
+    <a href="step4_testcase.html">④ Test Case</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <div class="portfolio-flow">
+    <div class="pf-title">본 문서는 총 4단계로 구성되어 있습니다</div>
+    <div class="pf-steps">
+      <a href="step1_analysis.html" class="pf-step pf-active">
+        <div class="pf-num">Step 1</div>
+        <div class="pf-name">콘텐츠 분석서</div>
+        <div class="pf-desc">시스템 구조, 옵션 분석, 재화 운영 설계</div>
+      </a>
+      <div class="pf-arrow">›</div>
+      <a href="step2_table.html" class="pf-step">
+        <div class="pf-num">Step 2</div>
+        <div class="pf-name">데이터 테이블</div>
+        <div class="pf-desc">옵션 수치, 변환 레벨 종합 데이터 정리</div>
+      </a>
+      <div class="pf-arrow">›</div>
+      <a href="step3_simulator.html" class="pf-step">
+        <div class="pf-num">Step 3</div>
+        <div class="pf-name">어빌리티 시뮬레이터</div>
+        <div class="pf-desc">확률 검증, 비용 계산, 옵션 변화 시뮬레이션</div>
+      </a>
+      <div class="pf-arrow">›</div>
+      <a href="step4_testcase.html" class="pf-step">
+        <div class="pf-num">Step 4</div>
+        <div class="pf-name">Test Case</div>
+        <div class="pf-desc">UI 출력, 상호작용, 옵션 출력 검증</div>
+      </a>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,#f0f4ff 0%,#fafbff 100%);border:1.5px solid #a5b4fc;border-radius:10px;padding:14px 20px;margin:12px 0 0;box-shadow:0 2px 8px rgba(99,102,241,.12);">
+    <div style="margin-bottom:6px;">
+      <span style="font-size:12px;font-weight:700;color:#4338ca;letter-spacing:.02em;">AI 협업 제작</span>
+    </div>
+    <div style="font-size:12px;color:#374151;line-height:1.7;">
+      본 문서의 디자인 및 시각적 구성 요소는 <strong style="color:#4338ca;">AI Claude Code</strong>의 도움을 받아 제작되었습니다.
+    </div>
+  </div>
+
+  <div class="basis-note" style="margin-top:10px;">
+    <span class="basis-icon">📌</span>
+    <div>
+      <strong>분석 근거</strong><br>
+      본 분석서는 직접 플레이를 통한 1차 데이터 수집을 기반으로, 유저 커뮤니티 및 유튜브 공략 콘텐츠와의 교차 검증을 거쳐 작성되었습니다. 단순 정보 취합이 아닌 플레이어 시점의 실체험에서 도출한 분석입니다.
+    </div>
+  </div>
+
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#s1">기획 의도 및 시스템의 역할 — 유저는 왜 어빌리티에 몰입하는가?</a></li>
+      <li><a href="#s2">시스템 구조 요약 (Flow Analysis)</a></li>
+      <li><a href="#s3">어빌리티 옵션 확률 구조 분석 (Data Insight)</a></li>
+      <li><a href="#s4">[핵심 메커니즘 ①] 잠금(Lock) 시스템과 재화 운영 구조</a> <span class="toc-badge new-lock">LOCK</span></li>
+      <li><a href="#s5">[핵심 메커니즘 ②] 어빌리티 변환 레벨 시스템</a> <span class="toc-badge new-level">NEW</span></li>
+      <li><a href="#s6">주요 옵션 티어 및 메타 분석</a></li>
+      <li><a href="#s7">재화 운영(Economy) 및 유저층별 운영 전략</a></li>
+      <li><a href="#s8">종합 평가(SWOT) 및 시스템 밸런스</a></li>
+      <li><a href="#s9">후속 산출물 안내</a></li>
+    </ol>
+  </nav>
+
+  <!-- ── S1 ── -->
+  <section class="section" id="s1">
+    <div class="s1-inner">
+    <div class="section-label">SECTION 01</div>
+    <h2>기획 의도 및 시스템의 역할<br><small style="font-size:14px;font-weight:400;color:var(--text-muted)">유저는 왜 어빌리티에 몰입하는가?</small></h2>
+
+    <p>방치형 RPG에서 유저의 성장은 레벨업, 장비 강화, 유물 누적, 동료 운용 등 다양한 시스템을 통해 이루어집니다. 그런데 흥미롭게도, 메이플 키우기 유저들은 다른 어떤 시스템보다도 어빌리티에 가장 깊이 몰입합니다. 커뮤니티의 공략, 후기, 메타 분석의 절반 이상이 어빌리티 관련 내용이며, 종결 옵션 한 줄을 위해 수십만 단위의 명예의 훈장을 투자하는 유저도 적지 않습니다.</p>
+    <p>이 현상은 자연스럽게 한 가지 질문으로 이어집니다.</p>
+    <div style="background:var(--accent-light);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:14px 0;font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.7;">
+      "어빌리티가 없어도 다른 시스템으로 충분히 성장할 수 있는데, 왜 유저들은 굳이 어빌리티에 이렇게까지 몰입하는가?"
+    </div>
+    <p>본 장은 이 질문에서 출발합니다. 그리고 그 답을 추적하다 보면, 어빌리티가 단순한 "또 하나의 성장 수단"이 아니라 본 게임의 후반부 깊이를 떠받치는 기반 시스템임이 드러납니다. 유저의 몰입은 우연이 아니라, 이 시스템이 다른 어떤 시스템도 대체할 수 없는 고유 가치를 제공하기 때문에 발생하는 결과입니다.</p>
+    <p>본 장에서는 유저 몰입의 근거를 5가지 차원에서 분석하며, 마지막에 어빌리티 시스템의 존재 이유를 종합적으로 정의합니다.</p>
+
+    <h3>1-1. 몰입의 근거 ① — "수치 누적"이 아닌 "빌드 선택"의 매력</h3>
+    <p>유저가 어빌리티에 몰입하는 첫 번째 이유는, 이 시스템이 다른 성장 시스템과 근본적으로 다른 종류의 재미를 제공하기 때문입니다. 메이플 키우기의 주요 성장 시스템을 비교하면 그 차이가 명확히 드러납니다.</p>
+    <table class="comparison-table" style="margin:12px 0;">
+      <thead><tr><th>성장 시스템</th><th>성장 방식</th><th>결과 형태</th><th>유저별 차별화</th></tr></thead>
+      <tbody>
+        <tr><td>레벨업</td><td>시간 투자 → 자동 누적</td><td>수치 (선형)</td><td>없음</td></tr>
+        <tr><td>장비 강화 (스타포스)</td><td>재화 투자 → 단계 상승</td><td>수치 (선형)</td><td>낮음</td></tr>
+        <tr><td>무기 (소환/각성/강화)</td><td>가챠 + 등급 승급 + 레벨 강화</td><td>등급/수치 누적</td><td>낮음</td></tr>
+        <tr><td>유물</td><td>컬렉션 누적</td><td>효과 누적</td><td>낮음</td></tr>
+        <tr><td>동료 (소환/레벨업/조합)</td><td>가챠 + 메인/서브 슬롯 조합</td><td>콘텐츠별 조합 차별화</td><td>중간</td></tr>
+        <tr style="background:var(--accent-light);font-weight:600;"><td>어빌리티</td><td>옵션 리롤 + 슬롯 선택</td><td>빌드 차별화</td><td><mark>높음</mark></td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:14px;font-size:14px;font-weight:700;color:var(--text-primary);">무기 시스템과 어빌리티의 결정적 차이</p>
+    <p>특히 무기 시스템은 확률 기반 가챠라는 점에서 어빌리티와 표면적으로 유사해 보일 수 있습니다. 그러나 그 결과 형태와 유저 행동을 면밀히 비교하면, 본질적으로 다른 시스템임이 드러납니다.</p>
+    <p style="font-weight:600;margin-top:10px;">무기 시스템의 특성</p>
+    <ul class="unit-list">
+      <li><span class="unit-dot"></span><span><strong>재화 접근성이 높음</strong> — 무기 소환권은 챕터 사냥, 무기 던전, 일일/주간 퀘스트, 이벤트 등 다양한 경로로 정기적 수급 가능. 무/소과금 유저도 꾸준한 플레이로 상위 등급(미스틱) 도달이 가능합니다.</span></li>
+      <li><span class="unit-dot"></span><span><strong>결과의 동질화</strong> — 모든 유저의 목표는 동일합니다. "현 시점 최고 등급 무기를 뽑고, 5성 각성 후, 레벨 200까지 강화한다". 같은 직업을 플레이하는 유저들은 결국 같은 무기를 같은 방향으로 키워나갑니다.</span></li>
+      <li><span class="unit-dot"></span><span><strong>선택의 여지가 없음</strong> — 무기를 획득한 후 유저가 결정할 것은 "이걸 더 강화할까, 다음 무기를 노릴까" 뿐입니다. 무엇을 선택했는가가 아니라, 어디까지 도달했는가가 차별화의 전부입니다.</span></li>
+    </ul>
+    <p style="font-weight:600;margin-top:14px;">동료 시스템의 특성</p>
+    <ul class="unit-list">
+      <li><span class="unit-dot"></span><span>동료 역시 가챠 기반이지만, 메인 1 + 서브 6슬롯의 조합 운용을 통해 콘텐츠별 동료 교체(사냥/보스/아레나)가 가능하다는 점에서 단순 수치 누적형보다는 한 단계 차별화된 시스템입니다. 다만 차별화의 출발점은 결국 <strong>"어떤 동료를 뽑았는가"</strong>라는 가챠 결과에 종속되며, 유저의 선택은 보유한 동료 풀 내에서의 조합 선택에 국한됩니다.</span></li>
+    </ul>
+    <p style="font-weight:600;margin-top:14px;">어빌리티의 차이점</p>
+    <ul class="unit-list">
+      <li><span class="unit-dot"></span><span><strong>재화 접근성은 낮지만 의사결정 깊이가 큼</strong> — 명예의 훈장은 무기 소환권만큼 흔하지 않지만, 유저는 매 리롤마다 잠그느냐 / 다시 돌리느냐 / 어떤 옵션을 종결로 정할 것인가라는 능동적 의사결정을 내립니다.</span></li>
+      <li><span class="unit-dot"></span><span><strong>결과의 차별화</strong> — 같은 직업 유저라도 어빌리티 세팅은 콘텐츠 우선순위에 따라 다릅니다. 사냥 중심 유저, 보스 극딜 유저, 아레나 유저의 어빌리티 빌드는 서로 다른 방향으로 발산합니다.</span></li>
+      <li><span class="unit-dot"></span><span><strong>선택이 결과를 결정함</strong> — 유저는 같은 재화를 투입해도 어떤 옵션을 잠그느냐, 어느 시점에 변환 레벨업을 우선하느냐에 따라 완전히 다른 빌드에 도달합니다. 동료 시스템이 <strong>"주어진 카드 중에서 고르는 선택"</strong>이라면, 어빌리티는 <strong>"카드 자체를 만들어가는 선택"</strong>입니다.</span></li>
+    </ul>
+
+    <p style="margin-top:14px;font-size:13px;font-weight:700;color:var(--text-primary);">본질적 차이의 정리</p>
+    <table class="comparison-table" style="margin:10px 0;">
+      <thead><tr><th>차원</th><th>무기 시스템</th><th>어빌리티 시스템</th></tr></thead>
+      <tbody>
+        <tr><td><strong>가챠 형태</strong></td><td>가챠 → 등급 승급 → 레벨 강화 (확정 누적)</td><td>가챠 → 옵션 선택 → 잠금 (확률 리롤)</td></tr>
+        <tr><td><strong>유저의 의사결정 지점</strong></td><td>강화 여부 / 다음 무기 도전 여부</td><td>잠금 운용 / 종결 옵션 선정 / 프리셋 분배</td></tr>
+        <tr><td><strong>동일 직업 내 결과물</strong></td><td>동일 (최고 등급 5성 + Lv200으로 수렴)</td><td>차별화 (콘텐츠 우선순위에 따라 발산)</td></tr>
+        <tr><td><strong>유저별 빌드 차별화</strong></td><td>낮음</td><td><mark>높음</mark></td></tr>
+      </tbody>
+    </table>
+
+    <p>다른 시스템들이 "누가 더 많이 누적했는가"라는 양적 경쟁을 만든다면, 어빌리티는 "각자 무엇을 선택했는가"라는 질적 차별화를 만듭니다. 무기 시스템처럼 가챠 형태를 가진 시스템조차도 결국 수치 누적으로 수렴되는 반면, 어빌리티만이 빌드 다양화라는 고유 가치를 유저에게 제공합니다.</p>
+    <p>같은 챕터를 진행하는 두 유저가 있어도 어빌리티 세팅은 서로 다를 수 있고, 이는 "나의 빌드는 나만의 것"이라는 소유감으로 이어집니다. 유저가 어빌리티에 깊이 몰입하는 이유는, 그것이 자신의 캐릭터를 진정으로 "내 캐릭터"로 만들어주는 유일한 시스템이기 때문입니다.</p>
+
+    <h3>1-2. 몰입의 근거 ② — 시스템 의존도, 어빌리티가 없으면 무엇이 무너지는가?</h3>
+    <p>유저의 몰입이 정당화되는 두 번째 이유는, 어빌리티가 다른 시스템들의 기반 역할을 하기 때문입니다. 어빌리티 시스템이 사라진다고 가정하면, 단순히 "성장 옵션 하나가 줄어드는" 차원이 아니라 다음 시스템들이 연쇄적으로 무력화됩니다:</p>
+    <ul class="unit-list">
+      <li><span class="unit-dot"></span><span><strong>프리셋 시스템 무력화</strong> — 사냥/보스/아레나 등 콘텐츠별 세팅 분리는 어빌리티 옵션을 기반으로 작동합니다. 어빌리티가 없으면 프리셋의 존재 이유 자체가 사라집니다.</span></li>
+      <li><span class="unit-dot level"></span><span><strong>변환 레벨 시스템 소멸</strong> — 5장에서 분석할 변환 레벨은 어빌리티 리롤 행위에 종속됩니다. 어빌리티가 없으면 변환 레벨도 작동하지 않습니다.</span></li>
+      <li><span class="unit-dot"></span><span><strong>콘텐츠별 전략 차별화 불가능</strong> — "보스 데미지 +40%" 같은 콘텐츠 특화 빌드는 어빌리티에서만 가능합니다. 다른 시스템은 전 콘텐츠 공통 누적 방식입니다.</span></li>
+      <li><span class="unit-dot"></span><span><strong>질적 목표 설정 상실</strong> — 다른 시스템의 목표는 "더 많이"인 반면, 어빌리티는 "무엇을 종결로 정할 것인가"라는 질적 선택 목표를 제공합니다.</span></li>
+    </ul>
+    <p>유저가 어빌리티에 시간과 재화를 투자하는 것은 단순히 그 시스템 하나를 위해서가 아닙니다. 어빌리티에 투자하는 행위 자체가 프리셋, 변환 레벨, 콘텐츠 빌드 다변화 전체를 작동시키는 진입점이기 때문입니다.</p>
+
+    <h3>1-3. 몰입의 근거 ③ — 미투자 시 체감되는 실전 격차</h3>
+    <p>위의 두 가지가 시스템 차원의 분석이라면, 이번 절은 유저의 일상 플레이에서 어떻게 체감되는가에 대한 분석입니다. 어빌리티 투자를 하지 않을 경우 유저는 직접적인 진행 불가보다는 <mark>기회비용 측면의 차이</mark>를 체감하게 됩니다.</p>
+    <p>① <strong>챕터 진행 속도 및 파밍 효율 차이</strong> — 어빌리티가 없어도 챕터 클리어는 가능하지만, 사냥 전용 옵션이 세팅된 유저 대비 동일 구간 통과에 더 많은 시간이 소요됩니다. 이 파밍 효율의 차이는 시간당 획득 재화의 격차로 이어져 전체적인 성장 속도에 영향을 줍니다.</p>
+    <p>② <strong>하이엔드 콘텐츠 보상 경쟁력</strong> — 보스 데미지나 방어 관통력 등 핵심 타격 옵션은 다른 성장 시스템에서 동일한 수치로 보완하기 어렵습니다(1-1 표 참조). 제한된 시간 내 폭딜이 요구되는 파티 퀘스트나 아레나에서 누적 데미지 달성이 어려워지며, 이는 상위 등급 보상 획득 경쟁력에 직접 영향을 미칩니다.</p>
+    <p>③ <strong>길드 단합 콘텐츠 기여도</strong> — 길드 토벌전 등 협력 콘텐츠에서 개인 스펙은 길드 전체 랭킹과 보상에 영향을 줍니다. 이는 '길드 기여'에 대한 자연스러운 동기로 작용하여 자발적인 스펙업을 유도합니다.</p>
+    <p>이 세 가지 체감 효과는 모두 "빌드 차별화의 부재"에서 비롯됩니다. 1-1에서 분석한 빌드 차별화의 가치가 실전 콘텐츠에서 가시화되는 지점이 바로 이 영역이며, 유저가 어빌리티 투자를 미룰 수 없게 만드는 직접적 압력으로 작용합니다.</p>
+
+    <h3>1-4. 몰입의 근거 ④ — 방치형 RPG의 본질적 약점을 보완</h3>
+    <p>유저 몰입의 네 번째 근거는 장르 차원에 있습니다. 방치형 RPG는 "시간만 투자하면 누구나 같은 곳에 도달"하는 구조적 특성을 가지며, 이는 후반부 "내가 특별하지 않다"는 동질화 감각으로 이어져 유저 이탈의 주요 원인이 됩니다.</p>
+    <p>어빌리티와 같은 옵션 리롤 시스템은 "내 캐릭터는 다른 유저와 다르다"는 차별화 감각을 제공함으로써 이 약점을 보완합니다. 이는 본 게임만의 특징이 아니라 방치형 RPG 장르 전반의 표준 메커니즘(세븐나이츠 키우기의 룬, 디아블로류의 옵션 리롤 등)이며, 어빌리티가 본 게임에서 차지하는 위치가 장르적으로 "보조 시스템"이 아닌 "핵심 차별화 시스템"임을 확인할 수 있습니다.</p>
+    <p>즉 유저의 어빌리티 몰입은 본 게임 고유의 현상이 아니라, 방치형 RPG 장르 전반에서 검증된 보편적 행동 패턴입니다.</p>
+
+    <h3>1-5. 몰입의 근거 ⑤ — 결제로 이어지는 동선 (BM 구조)</h3>
+    <p>마지막 다섯 번째 차원은 BM 측면입니다. 다른 성장 시스템 대부분은 확정 누적형(재화 투자 → 수치 상승 보장)인 반면, 어빌리티는 확률 리롤형(재화 투자 → 결과 미보장)입니다. 이 차이는 유저 몰입의 깊이와 BM 구조 모두에 결정적입니다:</p>
+    <table class="comparison-table" style="margin:12px 0;">
+      <thead><tr><th>구분</th><th>확정 누적형 (장비/유물 등)</th><th>확률 리롤형 (어빌리티)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>재화 소모 상한</strong></td><td>존재 (목표 단계 도달 시 종료)</td><td>없음 (욕망 강도에 비례하여 무한 확장)</td></tr>
+        <tr><td><strong>주요 유저층</strong></td><td>일반 유저 (안착 + 평균 매출)</td><td>고관여 유저 (종결 + 최대 매출)</td></tr>
+        <tr><td><strong>게임 내 역할</strong></td><td>폭넓은 유저 리텐션</td><td>고관여 유저 BM 엔진</td></tr>
+      </tbody>
+    </table>
+    <p>결국 유저는 1-3에서 분석한 성장 정체를 단축하고 경쟁 우위를 확보하기 위해 결제를 진행하게 됩니다. 유료 패스나 다이아를 통해 <mark>명예의 훈장</mark>에 투자함으로써 즉각적인 체급 상승과 파밍 효율 향상을 얻는 구조이며, 이는 본 게임의 안정적인 <mark>매출-리텐션 연계 구조</mark>를 형성합니다.</p>
+    <p>특히 확률 리롤형 구조의 특성상 어빌리티는 "넓고 얕은 매출"이 아닌 "깊고 긴 매출"을 담당하는 핵심 BM 엔진으로 작동합니다. 유저의 몰입이 깊을수록 결제 동선도 길어지는 구조이며, 이는 1-1~1-4에서 분석한 어빌리티의 고유 가치들이 모두 결합되어 작동한 결과입니다.</p>
+
+    <h3>1-6. 종합 — 유저 몰입의 진짜 이유, 그리고 어빌리티의 존재 이유</h3>
+    <p>본 장의 출발점이었던 질문 — "유저는 왜 어빌리티에 몰입하는가?"에 대한 답은 5가지 차원의 분석을 통해 다음과 같이 정리됩니다:</p>
+    <div style="background:#f8faff;border:1px solid #c7d2fe;border-radius:10px;padding:18px 22px;margin:14px 0;font-size:13px;color:var(--text-secondary);line-height:1.9;">
+      <p style="font-size:13px;color:var(--text-primary);font-weight:600;margin-bottom:10px;">유저가 어빌리티에 깊이 몰입하는 것은 이 시스템이</p>
+      <div>① 다른 어떤 시스템도 제공하지 못하는 "빌드 차별화"의 매력 (1-1)</div>
+      <div>② 프리셋, 변환 레벨 등 연계 시스템 전체의 진입점 (1-2)</div>
+      <div>③ 콘텐츠별 실전 경쟁력의 직접적 원천 (1-3)</div>
+      <div>④ 방치형 RPG의 동질화 약점을 보완하는 차별화 감각 (1-4)</div>
+      <div>⑤ 고관여 유저의 장기 결제 동선 (1-5)</div>
+      <p style="margin-top:10px;font-size:13px;color:var(--text-primary);font-weight:600;">을 동시에 제공하기 때문이다.</p>
+    </div>
+    <p>그리고 이 5가지 가치는 단순한 "장점 나열"이 아니라, 어빌리티 시스템이 본 게임에서 차지하는 위치 자체를 보여줍니다.</p>
+    <div class="insight-box" style="margin-top:12px;">
+      <div class="insight-title">🎯 어빌리티의 존재 이유</div>
+      <p>어빌리티는 "있으면 좋은 추가 시스템"이 아니다. 이 시스템이 존재함으로써 비로소 본 게임의 후반부 깊이가 완성된다. 유저의 몰입은 우연이 아니라, 어빌리티가 본 게임의 기반 시스템이라는 사실의 자연스러운 결과다.</p>
+      <p style="margin-top:6px;">이 시스템적 위치를 전제로, 2장 이후에서는 어빌리티의 내부 메커니즘(잠금, 변환 레벨, 프리셋)을 단계적으로 분석합니다.</p>
+    </div>
+    </div>
+  </section>
+
+  <!-- ── S2 ── -->
+  <section class="section" id="s2">
+    <div class="section-label">SECTION 02</div>
+    <h2>시스템 구조 요약 <span style="font-weight:400;font-size:15px;color:var(--text-muted)">Flow Analysis</span></h2>
+    <p>본 콘텐츠는 유저의 성장 동기를 바탕으로 <mark>순환적 사이클 구조</mark>를 가지며, 단순한 단계 진행이 아닌 반복 가동되는 성장 엔진으로 작동합니다.</p>
+
+    <h3>2-1. 기본 단위 구조</h3>
+    <ul class="unit-list">
+      <li><span class="unit-dot"></span><span><strong>용사의 힘</strong> — 캐릭터 본연의 체급을 영구적으로 올리는 내실 성장 목표 제공</span></li>
+      <li><span class="unit-dot"></span><span><strong>어빌리티 (리롤 ↔ 잠금)</strong> — 확률적 획득과 잠금 메커니즘을 통해 한 줄씩 단계적으로 완성</span></li>
+      <li><span class="unit-dot"></span><span><strong>프리셋</strong> — 완성된 어빌리티 세트를 콘텐츠별로 보관/운용하는 컨테이너</span></li>
+      <li><span class="unit-dot level"></span><span><strong>변환 레벨</strong> — 사이클 전체에 걸쳐 누적되는 메타 보상 축 (재화 투자 총량 → 1~20Lv)</span></li>
+    </ul>
+
+    <h3>2-2. 사이클 구조</h3>
+    <div class="cycle-wrap">
+      <div class="cycle-main">
+        <div class="cycle-node">
+          <div class="cycle-node-icon"><img class="game-icon-cycle" src="../images/nobg_hero_power_icon.png" alt="용사의 힘"></div>
+          <div class="cycle-node-text"><div class="cn-label">용사의 힘</div><div class="cn-sub">영구 체급 성장</div></div>
+        </div>
+        <div class="cycle-arrow-v">↓</div>
+        <div class="cycle-node highlight">
+          <div class="cycle-node-icon"><img class="game-icon-cycle" src="../images/nobg_hero_power_ability_icon.png" alt="어빌리티"></div>
+          <div class="cycle-node-text"><div class="cn-label">어빌리티 (리롤 ↔ 잠금)</div><div class="cn-sub">한 줄씩 완성</div></div>
+        </div>
+        <div class="cycle-arrow-v">↓</div>
+        <div class="cycle-node complete">
+          <div class="cycle-node-icon"><img class="game-icon-cycle" src="../images/nobg_hero_power_ability_preset_icon.png" alt="프리셋 완성"></div>
+          <div class="cycle-node-text"><div class="cn-label">프리셋 1슬롯 완성</div><div class="cn-sub">어빌리티 세트 확정</div></div>
+        </div>
+        <div class="cycle-arrow-v">↓</div>
+        <div class="cycle-node multi">
+          <div class="cycle-node-icon"><img class="game-icon-cycle" src="../images/nobg_preset_icon2.png" alt="프리셋 다각화"></div>
+          <div class="cycle-node-text">
+            <div class="cn-label">프리셋 다각화</div>
+            <div class="cycle-content-icons">
+              <img class="game-icon-content" src="../images/nobg_party_quest_icon.png" alt="파티 퀘스트" title="파티 퀘스트"><span class="ci-name">파티 퀘스트</span>
+              <img class="game-icon-content" src="../images/nobg_arena_icon.png" alt="아레나" title="아레나"><span class="ci-name">아레나</span>
+              <img class="game-icon-content" src="../images/nobg_boss_icon.png" alt="보스" title="보스"><span class="ci-name">보스</span>
+              <img class="game-icon-content" src="../images/nobg_boss_raid_icon.png" alt="보스 레이드" title="보스 레이드"><span class="ci-name">보스 레이드</span>
+              <img class="game-icon-content" src="../images/nobg_guild_icon.png" alt="길드" title="길드"><span class="ci-name">길드</span>
+              <span class="ci-name ci-text-only">챕터 방치 전투</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cycle-sidebar">
+        <div class="loop-label">목적별 추가 투자 → 사이클 반복</div>
+        <div class="loop-arrow">↑</div>
+      </div>
+    </div>
+    <!-- 변환 레벨 meta axis -->
+    <div class="cycle-level-meta">
+      <span style="font-size:16px;flex-shrink:0;">📈</span>
+      <div><span class="clm-badge">변환 레벨</span> 모든 리롤에서 재화 소모량만큼 경험치 누적 → 1Lv ~ 20Lv 상승 → 옵션 풀 개방 + 확률 향상 (사이클 전체를 관통하는 메타 보상 축)</div>
+    </div>
+
+    <div class="insight-box" style="margin-top:14px;">
+      <div class="insight-title">🔁 사이클 구조의 3대 핵심</div>
+      <p><strong>잠금</strong> — 한 슬롯을 "완성"으로 이끄는 동력 메커니즘 (4장)</p>
+      <p><strong>프리셋</strong> — 완성된 단위를 콘텐츠별로 "확장"시키는 그릇 (4-4장)</p>
+      <p><strong>변환 레벨</strong> — 사이클 전체를 관통하며 장기 보상을 누적하는 메타 축 (5장)</p>
+    </div>
+  </section>
+
+  <!-- ── S3 ── -->
+  <section class="section" id="s3">
+    <div class="section-label">SECTION 03</div>
+    <div class="s3-header">
+      <h2>어빌리티 옵션 확률 구조 분석 <span style="font-weight:400;font-size:15px;color:var(--text-muted)">Data Insight</span></h2>
+      <div class="s3-grade-icons">
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade1_icon.png" alt="노말"><span>노말</span></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade2_icon.png" alt="레어"><span>레어</span></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade3_icon.png" alt="에픽"><span>에픽</span></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade4_icon.png" alt="유니크"><span>유니크</span></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade5_icon.png" alt="레전드리"><span>레전드리</span></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade6_icon.png" alt="미스틱"><span>미스틱</span></div>
+      </div>
+    </div>
+    <div class="note">본 항목의 옵션 수치는 인게임 표기 및 플레이 경험에 기반한 관찰값입니다. 단, 변환 레벨 관련 수치는 메이플키우기 공식 홈페이지 데이터 테이블을 기준으로 검증 완료한 항목입니다.</div>
+    <p>분석 결과, 어빌리티 옵션은 <mark>획득 가능 레벨</mark>과 <mark>등급</mark>에 따라 4단계로 계층 분리됩니다. 특히 고정 주 스탯은 등급에 완전히 종속되어, 레전드리(800~1,200)/미스틱(1,500~2,500)의 높은 고정 수치는 <strong>초반 구간에서 절대 획득 불가</strong>합니다.</p>
+    <div class="tier-table-wrap">
+      <table class="tier-table">
+        <thead>
+          <tr>
+            <th style="white-space:nowrap;">티어</th>
+            <th style="white-space:nowrap;">대표 등급</th>
+            <th style="white-space:nowrap;">획득 최소 레벨</th>
+            <th style="min-width:280px;">주요 옵션 및 수치</th>
+            <th style="min-width:220px;">기획 인사이트</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tier-badge tier-top">S<br>(미스틱 종결)</span></td>
+            <td>미스틱</td>
+            <td><span class="prob-chip">Lv 8~</span></td>
+            <td>
+              보스 몬스터 데미지 28~40%<br>
+              방어 관통력 14~20%<br>
+              최대/최소 데미지 배율 28~40%<br>
+              공격 속도 15~20%<br>
+              <em style="color:var(--text-muted);">고정 주 스탯 1,500~2,500 (Lv 8+ 전용)</em>
+            </td>
+            <td>Lv 8 미스틱 해금 후에만 등장. 랭커/과금 유저의 최종 종결 목표. 고정 주 스탯 1,500~2,500도 초반 획득 불가 — Lv 8 분기점의 핵심 가치</td>
+          </tr>
+          <tr>
+            <td><span class="tier-badge tier-high">A<br>(레전드리 목표)</span></td>
+            <td>레전드리</td>
+            <td><span class="prob-chip">Lv 5~</span></td>
+            <td>
+              보스/일반 몬스터 데미지 18~25%<br>
+              방어 관통력 8~12%<br>
+              공격 속도 10~14%<br>
+              메소/경험치 획득량 5~8%<br>
+              <em style="color:var(--text-muted);">고정 주 스탯 800~1,200 (Lv 5+ 전용)</em>
+            </td>
+            <td>Lv 5 레전드리 해금 후 등장. 무/소과금 유저의 현실적 달성 목표. 고정 주 스탯 800~1,200도 Lv 5+ 이후에만 획득 가능</td>
+          </tr>
+          <tr>
+            <td><span class="tier-badge tier-mid">B<br>(% 효율)</span></td>
+            <td>에픽 ~ 유니크</td>
+            <td><span class="prob-chip">Lv 1~</span></td>
+            <td>
+              크리티컬 확률 3~9% / 크리티컬 저항 4.5~13.5%<br>
+              최대/최소 데미지 배율 7~15%<br>
+              데미지 3~15%<br>
+              받는 피해 감소 2~3% / 공격 속도 7~9%
+            </td>
+            <td>Lv 1부터 에픽/유니크에서 획득 가능. 레전드리/미스틱 확보 전 보유 가치가 있으며, 상위 등급 확보 이후 교체 대상이 되는 과도기 옵션</td>
+          </tr>
+          <tr>
+            <td><span class="tier-badge tier-low">C<br>(초반 실용)</span></td>
+            <td>노말 ~ 유니크</td>
+            <td><span class="prob-chip">Lv 1~</span></td>
+            <td>
+              고정 주 스탯 40~700<br>
+              명중 / 회피 2~12<br>
+              최대 HP 1,200~30,000 / 최대 MP 30~400<br>
+              MP 회복 3~30 / 디버프 내성 4~12
+            </td>
+            <td>Lv 1부터 가장 높은 확률로 획득 가능한 초반 실용 옵션. 스탯 기반이 낮은 초반 전투력의 핵심. 후반 성장 누적 시 상대 효율 하락 → 자연스러운 재투자 유도</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="insight-box">
+      <div class="insight-title">🔍 핵심 분석 — 고정 주 스탯의 단계별 획득 구조</div>
+      <p>고정 주 스탯은 등급에 따라 <strong>40 ~ 2,500</strong>까지 분포하며, 높은 수치일수록 높은 등급에만 배치됩니다. 레전드리(800~1,200)는 Lv 5+, 미스틱(1,500~2,500)은 Lv 8+ 이후에만 획득 가능하므로, <strong>초반 구간에서는 유니크 주 스탯 700이 사실상 상한선</strong>입니다.</p>
+      <p>이 설계는 초반부터 과도한 고정 수치를 제공하지 않으면서, 레벨업을 통한 등급 해금으로 획득 가능한 수치 상한이 단계적으로 열리는 구조입니다. 유니크(700) → 레전드리(1,200, Lv 5+) → 미스틱(2,500, Lv 8+)으로 이어지는 고정 스탯 상향이 레벨 투자의 직접적 보상으로 기능하며, 장기적 성장 목표를 자연스럽게 형성합니다.</p>
+    </div>
+  </section>
+
+  <!-- ── S4 ── -->
+  <section class="section lock-section" id="s4">
+    <div class="section-label" style="color:var(--lock)">SECTION 04 | 핵심 메커니즘 ①</div>
+    <h2>잠금(Lock) 시스템과 재화 운영 구조<span class="s4-icons"><img src="../images/nobg_ability_point_icon-removebg-preview.png" alt="어빌리티 포인트"><img src="../images/nobg_hero_power_ability_preset_icon.png" alt="프리셋"></span></h2>
+    <p>어빌리티 시스템의 깊이는 두 가지 핵심 메커니즘 — <mark>잠금(Lock) 시스템</mark>(4장) 과 <mark>변환 레벨 시스템</mark>(5장) — 의 결합으로 형성됩니다. 본 장에서는 잠금 시스템을 다루며, 변환 레벨과의 연계는 5장에서 논의합니다.</p>
+
+    <div class="lock-subsection">
+      <h3>4-1. 비용 누적 메커니즘 (산식 검증 완료)</h3>
+      <p>유저가 원하는 고가치 옵션(예: 보스 데미지 40%)을 획득한 후 해당 슬롯을 '잠금' 처리하면, 그 슬롯은 이후 리롤에서 변경되지 않고 유지됩니다. 다만 잠금 슬롯 수가 늘어날수록 나머지 슬롯의 <strong>1회 리롤 비용(명예의 훈장)이 단계적으로 가산되는 구조</strong>입니다.</p>
+      <p>데이터 검증 결과, 비용 구조는 다음 규칙을 따릅니다: <strong>잠금 슬롯이 1개 늘어날 때마다, 해당 레벨의 기본 비용(잠금 0개)의 절반씩 일정하게 가산</strong>됩니다. 잠금 6개 시 기본 비용의 정확히 4배에 도달하며, 이 비율 구조는 Lv1~Lv20 전 구간에서 동일하게 유지됩니다.</p>
+      <div class="insight-box" style="margin:10px 0 14px;padding:12px 18px;">
+        <div class="insight-title">📐 비용 배수 구조</div>
+        <p style="font-size:13px;color:var(--text-secondary);">잠금 0개 = <strong>기준(1.0배)</strong> &nbsp;→&nbsp; 잠금 1개 = <strong>1.5배</strong> &nbsp;→&nbsp; 잠금 2개 = <strong>2.0배</strong> &nbsp;→&nbsp; 잠금 3개 = <strong>2.5배</strong> &nbsp;→&nbsp; 잠금 6개 = <strong>4.0배</strong></p>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">지수적 폭증이 아닌 선형 가산 구조 — 유저가 비용을 사전에 정확히 예측 가능</p>
+      </div>
+      <p>아래 표는 변환 레벨 1~20의 실제 1회 리롤 비용(명예의 훈장)입니다:</p>
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead>
+            <tr><th>변환 Lv</th><th>잠금 0개</th><th>잠금 1개</th><th>잠금 2개</th><th>잠금 3개</th><th>잠금 4개</th><th>잠금 5개</th><th>잠금 6개</th></tr>
+          </thead>
+          <tbody>
+            <tr class="level-phase-1"><td>Lv 1</td><td>20</td><td>30</td><td>40</td><td>50</td><td>60</td><td>70</td><td>80</td></tr>
+            <tr class="level-phase-1"><td>Lv 2</td><td>30</td><td>45</td><td>60</td><td>75</td><td>90</td><td>105</td><td>120</td></tr>
+            <tr class="level-phase-1"><td>Lv 3</td><td>40</td><td>60</td><td>80</td><td>100</td><td>120</td><td>140</td><td>160</td></tr>
+            <tr class="level-phase-1"><td>Lv 4</td><td>50</td><td>75</td><td>100</td><td>125</td><td>150</td><td>175</td><td>200</td></tr>
+            <tr class="level-phase-2"><td>Lv 5</td><td>55</td><td>83</td><td>110</td><td>138</td><td>165</td><td>193</td><td>220</td></tr>
+            <tr class="level-phase-2"><td>Lv 6</td><td>60</td><td>90</td><td>120</td><td>150</td><td>180</td><td>210</td><td>240</td></tr>
+            <tr class="level-phase-2"><td>Lv 7</td><td>65</td><td>98</td><td>130</td><td>163</td><td>195</td><td>228</td><td>260</td></tr>
+            <tr class="level-phase-3"><td>Lv 8</td><td>68</td><td>102</td><td>136</td><td>170</td><td>204</td><td>238</td><td>272</td></tr>
+            <tr class="level-phase-3"><td>Lv 9</td><td>71</td><td>107</td><td>142</td><td>178</td><td>213</td><td>249</td><td>284</td></tr>
+            <tr class="level-phase-3"><td>Lv 10</td><td>74</td><td>111</td><td>148</td><td>185</td><td>222</td><td>259</td><td>296</td></tr>
+            <tr class="level-phase-3"><td>Lv 11</td><td>77</td><td>116</td><td>154</td><td>193</td><td>231</td><td>270</td><td>308</td></tr>
+            <tr class="level-phase-3"><td>Lv 12</td><td>80</td><td>120</td><td>160</td><td>200</td><td>240</td><td>280</td><td>320</td></tr>
+            <tr class="level-phase-3"><td>Lv 13</td><td>83</td><td>125</td><td>166</td><td>208</td><td>249</td><td>291</td><td>332</td></tr>
+            <tr class="level-phase-3"><td>Lv 14</td><td>86</td><td>129</td><td>172</td><td>215</td><td>258</td><td>301</td><td>344</td></tr>
+            <tr class="level-phase-3"><td>Lv 15</td><td>89</td><td>134</td><td>178</td><td>223</td><td>267</td><td>312</td><td>356</td></tr>
+            <tr class="level-phase-3"><td>Lv 16</td><td>91</td><td>137</td><td>182</td><td>228</td><td>273</td><td>319</td><td>364</td></tr>
+            <tr class="level-phase-3"><td>Lv 17</td><td>93</td><td>140</td><td>186</td><td>233</td><td>279</td><td>326</td><td>372</td></tr>
+            <tr class="level-phase-3"><td>Lv 18</td><td>95</td><td>143</td><td>190</td><td>238</td><td>285</td><td>333</td><td>380</td></tr>
+            <tr class="level-phase-3"><td>Lv 19</td><td>97</td><td>146</td><td>194</td><td>243</td><td>291</td><td>340</td><td>388</td></tr>
+            <tr class="level-phase-3"><td><strong>Lv 20</strong></td><td><strong>99</strong></td><td><strong>149</strong></td><td><strong>198</strong></td><td><strong>248</strong></td><td><strong>297</strong></td><td><strong>347</strong></td><td><strong>396</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">행 색상: <span style="background:#eff6ff;padding:1px 7px;border-radius:3px;font-size:11px;">입문 구간 (Lv 1~4)</span> <span style="background:#f0fdf4;padding:1px 7px;border-radius:3px;font-size:11px;">전환 구간 (Lv 5~7)</span> <span style="background:#fef2f2;padding:1px 7px;border-radius:3px;font-size:11px;">마라톤 구간 (Lv 8~20)</span></p>
+    </div>
+
+    <div class="lock-subsection">
+      <h3>4-2. 유저 심리 모델 (매몰 비용 효과)</h3>
+      <p>이 구조는 유저의 의사결정에 <strong><span class="th-tooltip">매몰 비용 효과<span class="tip-icon">?</span><span class="tip-box" style="white-space:normal;width:260px;text-align:left;">이미 투자한 비용(시간/재화)이 아깝기 때문에, 회수 가능성이 낮더라도 투자를 계속 이어가게 되는 심리적 편향.<br><br>잠금 슬롯이 늘수록 리롤 비용이 증가하여 "여기서 멈출 수 없다"는 심리를 자연스럽게 유발합니다.</span></span></strong>를 자연스럽게 형성합니다.</p>
+      <div class="sunk-cost-chain">
+        <div class="scc-step">원하는 옵션<br>1개 획득</div><div class="scc-arrow">→</div>
+        <div class="scc-step">슬롯<br>잠금</div><div class="scc-arrow">→</div>
+        <div class="scc-step">1회 리롤 비용<br>1.5배로 증가</div><div class="scc-arrow">→</div>
+        <div class="scc-step">추가 옵션<br>획득</div><div class="scc-arrow">→</div>
+        <div class="scc-step">잠금<br>누적</div><div class="scc-arrow">→</div>
+        <div class="scc-step">비용<br>추가 가산</div><div class="scc-arrow">→</div>
+        <div class="scc-step">최종 슬롯 완성을<br>위한 집중 투자</div>
+      </div>
+      <p style="margin-top:8px;">이미 확보한 상위 옵션 3~4개의 가치가 누적될수록, 유저는 마지막 슬롯에서 최상위 옵션(0.0009%)을 확보하기까지 리롤을 지속할 동기가 강해집니다. 이 과정에서 자연스럽게 명예의 훈장 수요가 증가하며, 유료 재화 결제로 이어지는 동선이 형성됩니다.</p>
+    </div>
+
+    <div class="lock-subsection">
+      <h3>4-3. 시스템 설계상의 의의</h3>
+      <p>잠금 시스템은 단순 확률 뽑기 대비 다음과 같은 차별점을 제공합니다:</p>
+      <ul class="lock-points">
+        <li><span class="lp-icon">①</span><span><strong>단계적 성취감</strong> — 한 줄씩 완성해가는 과정에서 명확한 진척감 제공</span></li>
+        <li><span class="lp-icon">②</span><span><strong>재화 활용처 확장</strong> — 잠금 누적에 따른 비용 가산을 통해 재화 운영의 깊이 확보</span></li>
+        <li><span class="lp-icon">③</span><span><strong>장기 목표 유지</strong> — 마지막 1줄을 향한 지속적 동기 부여</span></li>
+        <li><span class="lp-icon">④</span><span><strong>예측 가능한 비용 곡선</strong> — 선형 가산 구조로 유저가 자신의 재화 투자량을 사전에 계산 가능</span></li>
+      </ul>
+    </div>
+
+    <div class="lock-subsection">
+      <h3>4-4. 잠금 시스템과 프리셋의 연계 구조</h3>
+      <p>잠금 시스템은 단일 프리셋 슬롯을 "완성"으로 이끄는 동력 메커니즘이며, 프리셋은 이렇게 완성된 단위를 콘텐츠별로 보관/운용하는 컨테이너로 작동합니다. 즉 [리롤 → 잠금 → 한 슬롯 완성] → [프리셋 다각화] → [새 프리셋 슬롯 시작]의 사이클이 형성되며, 이 순환 구조가 어빌리티 시스템의 장기 리텐션을 견인하는 핵심 동력으로 평가됩니다.</p>
+      <p>특히 주목할 점은, <strong>프리셋의 다중 슬롯 구조 자체가 잠금 메커니즘의 적용 범위를 확장시키는 증폭 장치</strong>로 기능한다는 점입니다. 만약 프리셋이 1개뿐이라면 한 번 완성된 후 리롤/잠금 사이클을 다시 가동할 동기가 약해집니다. 그러나 프리셋이 여러 개 존재하기 때문에, 1번(사냥) 완성 후에도 2번(보스), 3번(아레나) 슬롯을 새로 채우는 과정에서 동일한 사이클이 반복적으로 가동됩니다. 즉 프리셋은 단순한 편의 기능이 아니라, 잠금 메커니즘의 효용을 콘텐츠 수만큼 <strong>곱셈으로 확장</strong>시키는 시스템적 증폭 장치로 평가할 수 있습니다.</p>
+      <p style="font-size:12px; color:#b45309; margin-top:8px;">이 연계 구조는 7장에서 다룰 유저층별 운영 전략과 직접적으로 연결됩니다.</p>
+    </div>
+  </section>
+
+  <!-- ── S5 (NEW) ── -->
+  <section class="section level-section" id="s5">
+    <div class="section-label" style="color:var(--level)">SECTION 05 | 핵심 메커니즘 ②</div>
+    <div class="s3-header">
+      <h2>어빌리티 변환 레벨 시스템</h2>
+      <div class="s3-grade-icons">
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade1_icon.png" alt="노말"></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade2_icon.png" alt="레어"></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade3_icon.png" alt="에픽"></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade4_icon.png" alt="유니크"></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade5_icon.png" alt="레전드리"></div>
+        <div class="s3-grade-item"><img src="../images/nobg_ability_grade6_icon.png" alt="미스틱"></div>
+      </div>
+    </div>
+    <p>어빌리티 시스템의 또 다른 핵심 축은 <mark>어빌리티 변환 레벨</mark>입니다. 이는 4장의 잠금 시스템과 함께 어빌리티 콘텐츠를 지탱하는 양대 메커니즘이며, 단기 운(運)의 변동성을 장기 성장 축으로 흡수하는 <strong><span class="th-tooltip">보상 보정 장치<span class="tip-icon">?</span><span class="tip-box">리롤 실패 시 소모된 명예의 훈장이 변환 경험치로 누적되어<br>레벨업에 기여하는 구조. 단기 운의 편차를 장기 성장 보상으로<br>전환함으로써 반복 실패의 좌절감을 설계적으로 완화함.</span></span></strong>로 기능합니다.</p>
+
+    <div class="level-subsection">
+      <h3>5-1. 변환 레벨 메커니즘 (데이터 테이블 검증 완료)</h3>
+      <p>변환 레벨은 <strong>1레벨부터 20레벨</strong>까지 구성되어 있으며, 유저가 어빌리티 리롤에 소모한 <strong>명예의 훈장 누적량</strong>을 기반으로 경험치가 적립되는 구조입니다. 즉 단순한 리롤 횟수가 아니라 재화 투자 총량이 레벨 상승을 결정합니다.</p>
+      <p>데이터 테이블 분석 결과, 변환 레벨은 두 개의 분기점(5Lv, 8Lv)을 중심으로 한 <strong>3단계 구조</strong>로 설계되어 있습니다.</p>
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead>
+            <tr><th>레벨 구간</th><th>옵션 등급 풀</th><th>추천 스탯</th><th>구간 길이</th><th>구간 성격</th></tr>
+          </thead>
+          <tbody>
+            <tr class="level-phase-1">
+              <td><strong>1 ~ 4 Lv</strong></td>
+              <td>Grade 1~4 활성<br><small style="color:var(--text-muted);">노말/레어/에픽/유니크</small></td>
+              <td>5종<br><small style="color:var(--text-muted);">공격 속도 / 공격력 / 최소 데미지 배율 / 최대 데미지 배율 / 크리티컬 확률</small></td>
+              <td><span class="lv-badge open1">4레벨</span></td>
+              <td>입문 구간</td>
+            </tr>
+            <tr class="level-phase-2">
+              <td><strong>5 ~ 7 Lv</strong></td>
+              <td>Grade 5 신규 추가<br><small style="color:var(--text-muted);">레전드리 해금 → 누적 Grade 1~5</small></td>
+              <td>8종<br><small style="color:var(--text-muted);">↑ 5종 + 방어 관통력 / 보스 몬스터 데미지 / 일반 몬스터 데미지 추가</small></td>
+              <td><span class="lv-badge open2">3레벨</span></td>
+              <td>전환 구간</td>
+            </tr>
+            <tr class="level-phase-3">
+              <td><strong>8 ~ 20 Lv</strong></td>
+              <td>Grade 6 신규 추가 후 풀 고정<br><small style="color:var(--text-muted);">미스틱 해금 → 누적 Grade 1~6, 이후 확률만 누적 상승</small></td>
+              <td>8종 유지</td>
+              <td><span class="lv-badge prob">13레벨</span></td>
+              <td>마라톤 구간</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>전체 20레벨 중 약 65%에 해당하는 13레벨 구간(8~20Lv)이 신규 등급 풀 없이 확률만 누적 상승하는 구조라는 점은 본 시스템의 핵심 설계 철학을 드러냅니다.</p>
+      <p>또한 Lv20 도달까지 누적 요구 경험치는 약 <strong>150만 포인트</strong>로, Lv1 도달 기준치 대비 약 300배에 해당하는 장기 마라톤 콘텐츠임이 데이터로 확인됩니다.</p>
+    </div>
+
+    <div class="level-subsection">
+      <h3>5-2. 시스템 설계상의 의의</h3>
+      <p>본 시스템은 확률 기반 콘텐츠의 본질적 약점인 '좌절 리스크'를 효과적으로 흡수하는 동시에, '옵션 풀 개방'과 '확률 향상'을 단계별로 분리 설계하고, 레벨업 곡선 자체에도 좌절 흡수 장치를 내장한 점이 특히 정교합니다.</p>
+
+      <p><strong>① <span class="th-tooltip">좌절 흡수 장치<span class="tip-icon">?</span><span class="tip-box">리롤에 실패해도 소모된 명예의 훈장이 변환 경험치로 누적되어<br>레벨업에 기여하고, 향후 더 높은 확률과 더 넓은 옵션 풀로<br>보상받는 설계 메커니즘. 단기 실패를 장기 성장으로 전환함.</span></span>로서의 기능</strong></p>
+      <div class="quote-flow">
+        <div class="qf-bad">"운이 따르지 않아 재화를 투자해도 원하는 옵션이 나오지 않는다"</div>
+        <div class="qf-arrow">↓</div>
+        <div class="qf-good">"그러나 그 재화는 변환 레벨로 누적되어, 향후 더 높은 확률 / 더 좋은 옵션 풀로 보상된다"</div>
+      </div>
+      <p>이 구조는 유저에게 단기 결과(이번 리롤)와 별개로 <strong>장기 성장 축(변환 레벨)</strong>을 동시에 제공합니다. 결과적으로 4장에서 분석한 잠금 시스템의 매몰 비용 효과가 가질 수 있는 심리적 부담을 완화시키며, 유저가 지속적으로 도전을 이어갈 수 있는 동기 보정 장치로 작동합니다.</p>
+
+      <p style="margin-top:16px;"><strong>② 두 개의 분기점 (5Lv = 종결 옵션 조준점, 8Lv = 확률 펌핑 진입점)</strong></p>
+      <p>데이터 분석 결과, 변환 레벨은 단일 분기점이 아닌 두 개의 의미 있는 전환점을 가집니다.</p>
+      <ul class="unit-list">
+        <li><span class="unit-dot level"></span><span><strong>5Lv = 종결 옵션 조준점:</strong> 추천 스탯이 5종에서 8종으로 확장되며, 이때 추가되는 3종(방어 관통력 / 보스 데미지 / 일반몹 데미지)은 6장에서 [0티어]로 분류된 종결 옵션과 직접 연결됩니다. 즉 5Lv는 유저가 "범용 옵션 확보 단계"에서 "하이엔드 종결 옵션을 본격적으로 노리는 단계"로 전환하는 시스템적 분기점입니다.</span></li>
+        <li><span class="unit-dot level"></span><span><strong>8Lv = 확률 펌핑 진입점:</strong> 최고 등급(Grade6) 옵션 풀이 완성되며, 이후 13레벨 동안은 신규 등급 없이 확률만 누적 상승합니다. 즉 8Lv는 "옵션 발견의 단계"에서 "옵션 확보의 단계"로 전환하는 분기점이며, 8~20Lv의 13레벨 구간은 장기 종결을 위한 마라톤 콘텐츠로 기능합니다.</span></li>
+      </ul>
+
+      <p style="margin-top:16px;"><strong>③ 레벨업 곡선의 단계적 완화 (좌절 흡수 장치의 이중 설계)</strong></p>
+      <p>데이터 분석에서 드러난 가장 흥미로운 설계 특성은 레벨업 경험치 증가율이 후반으로 갈수록 완화된다는 점입니다.</p>
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead><tr><th>레벨업 구간</th><th>레벨업 필요 훈장 (근사치)</th><th><span class="th-tooltip">전 구간 대비<span class="tip-icon">?</span><span class="tip-box">직전 레벨업 구간의 필요 훈장 대비 이번 구간의 증감률.<br>(−) = 전 구간보다 경감 &nbsp;|&nbsp; (+) = 전 구간보다 증가<br>수치 완화가 지속될수록 레벨업 페이스가 가속을 멈춤.</span></span></th></tr></thead>
+          <tbody>
+            <tr class="level-phase-1"><td>Lv1 → 2</td><td>약 7,000</td><td>—</td></tr>
+            <tr class="level-phase-1"><td>Lv2 → 3</td><td>약 6,000</td><td>-15%</td></tr>
+            <tr class="level-phase-1"><td>Lv3 → 4</td><td>약 7,000</td><td>+20%</td></tr>
+            <tr class="level-phase-1"><td>Lv4 → 5</td><td>약 10,000</td><td>+40%</td></tr>
+            <tr class="level-phase-2"><td>Lv5 → 6</td><td>약 15,000</td><td>+40%</td></tr>
+            <tr class="level-phase-2"><td>Lv6 → 7</td><td>약 20,000</td><td>+40%</td></tr>
+            <tr class="level-phase-2"><td>Lv7 → 8</td><td>약 30,000</td><td>+40%</td></tr>
+            <tr class="level-phase-3"><td>Lv8 → 9</td><td>약 40,000</td><td>+40%</td></tr>
+            <tr class="level-phase-3"><td>Lv9 → 10</td><td>약 40,000</td><td>+5%</td></tr>
+            <tr class="level-phase-3"><td>Lv10 → 11</td><td>약 55,000</td><td>+30%</td></tr>
+            <tr class="level-phase-3"><td>Lv11 → 12</td><td>약 70,000</td><td>+30%</td></tr>
+            <tr class="level-phase-3"><td>Lv12 → 13</td><td>약 90,000</td><td>+30%</td></tr>
+            <tr class="level-phase-3"><td>Lv13 → 14</td><td>약 120,000</td><td>+30%</td></tr>
+            <tr class="level-phase-3"><td>Lv14 → 15</td><td>약 100,000</td><td>-15%</td></tr>
+            <tr class="level-phase-3"><td>Lv15 → 16</td><td>약 120,000</td><td>+20%</td></tr>
+            <tr class="level-phase-3"><td>Lv16 → 17</td><td>약 145,000</td><td>+20%</td></tr>
+            <tr class="level-phase-3"><td>Lv17 → 18</td><td>약 175,000</td><td>+20%</td></tr>
+            <tr class="level-phase-3"><td>Lv18 → 19</td><td>약 210,000</td><td>+20%</td></tr>
+            <tr class="level-phase-3"><td>Lv19 → 20</td><td>약 250,000</td><td>+20%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>일반적인 게임 디자인의 직관과 달리, 본 시스템은 후반 구간일수록 레벨업 가속도가 의도적으로 완화되도록 설계되어 있습니다. 이는 8Lv 이후의 13레벨 마라톤 구간에서 유저가 좌절하지 않도록 레벨업 페이스 자체에 좌절 흡수 장치를 내장한 정교한 설계로 해석됩니다.</p>
+      <p>물론 절대량은 여전히 누적되므로(Lv20 도달 시 약 150만 포인트, Lv1 대비 약 300배), 증가율 완화와 절대량 누적이라는 이중 곡선이 균형을 이루는 구조입니다.</p>
+
+      <p style="margin-top:16px;"><strong>④ 1회 리롤 비용의 증가폭 둔화</strong></p>
+      <p>1회 리롤 기본 비용(L0)의 레벨별 실제 값과 증가폭입니다:</p>
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead><tr><th>레벨</th><th>L0 비용 (훈장)</th><th>전 레벨 대비</th></tr></thead>
+          <tbody>
+            <tr class="level-phase-1"><td>Lv 1</td><td>20</td><td>—</td></tr>
+            <tr class="level-phase-1"><td>Lv 2</td><td>30</td><td>+10</td></tr>
+            <tr class="level-phase-1"><td>Lv 3</td><td>40</td><td>+10</td></tr>
+            <tr class="level-phase-1"><td>Lv 4</td><td>50</td><td>+10</td></tr>
+            <tr class="level-phase-2"><td>Lv 5</td><td>55</td><td>+5</td></tr>
+            <tr class="level-phase-2"><td>Lv 6</td><td>60</td><td>+5</td></tr>
+            <tr class="level-phase-2"><td>Lv 7</td><td>65</td><td>+5</td></tr>
+            <tr class="level-phase-3"><td>Lv 8</td><td>68</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 9</td><td>71</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 10</td><td>74</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 11</td><td>77</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 12</td><td>80</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 13</td><td>83</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 14</td><td>86</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 15</td><td>89</td><td>+3</td></tr>
+            <tr class="level-phase-3"><td>Lv 16</td><td>91</td><td>+2</td></tr>
+            <tr class="level-phase-3"><td>Lv 17</td><td>93</td><td>+2</td></tr>
+            <tr class="level-phase-3"><td>Lv 18</td><td>95</td><td>+2</td></tr>
+            <tr class="level-phase-3"><td>Lv 19</td><td>97</td><td>+2</td></tr>
+            <tr class="level-phase-3"><td>Lv 20</td><td>99</td><td>+2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>증가폭이 +10 → +5 → +3 → +2로 단계적으로 줄어들어, 레벨이 높아질수록 1회 시도 비용 부담은 거의 고정에 가까워집니다. ③의 레벨업 곡선 완화와 같은 방향으로, 후반 구간에서 핵심 허들은 개별 시도 비용이 아닌 누적 변환 횟수 자체가 됩니다.</p>
+    </div>
+
+    <div class="level-subsection">
+      <h3>5-3. 레벨업 재화 소모량 정량 분석</h3>
+      <p>어빌리티 변환 레벨 도달 경험치 = 명예의 훈장 누적 소모량 분석 결과, 변환 레벨 시스템의 실제 재화 소모 곡선이 정량적으로 드러납니다.</p>
+      <p><strong>① 레벨별 누적 비용과 전체 여정 대비 비중</strong></p>
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead>
+            <tr><th>레벨</th><th>누적 명예의 훈장</th><th><span class="th-tooltip">전체 여정 대비<span class="tip-icon">?</span><span class="tip-box">Lv 1→20 총 소모 훈장(약 150만 개) 대비<br>해당 레벨까지의 누적 소모 비율.<br>100% = Lv 20 도달 완료.</span></span></th><th>단계 의미</th></tr>
+          </thead>
+          <tbody>
+            <tr class="level-phase-1"><td>Lv 1</td><td>약 5,000</td><td>0.3%</td><td>—</td></tr>
+            <tr class="level-phase-1"><td>Lv 2</td><td>약 10,000</td><td>0.7%</td><td>—</td></tr>
+            <tr class="level-phase-1"><td>Lv 3</td><td>약 20,000</td><td>1.3%</td><td>—</td></tr>
+            <tr class="level-phase-1"><td>Lv 4</td><td>약 25,000</td><td>1.7%</td><td>—</td></tr>
+            <tr class="level-phase-2"><td><strong>Lv 5</strong> <span class="lv-badge open2">분기점</span></td><td><strong>약 35,000</strong></td><td><strong>2.3%</strong></td><td>종결 옵션 추천 풀 추가</td></tr>
+            <tr class="level-phase-2"><td>Lv 6</td><td>약 50,000</td><td>3.3%</td><td>—</td></tr>
+            <tr class="level-phase-2"><td>Lv 7</td><td>약 70,000</td><td>4.7%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td><strong>Lv 8</strong> <span class="lv-badge prob">분기점</span></td><td><strong>약 100,000</strong></td><td><strong>6.7%</strong></td><td>최고 등급 풀 완성</td></tr>
+            <tr class="level-phase-3"><td>Lv 9</td><td>약 135,000</td><td>9.0%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 10</td><td>약 175,000</td><td>11.7%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 11</td><td>약 230,000</td><td>15.3%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 12</td><td>약 300,000</td><td>20.0%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 13</td><td>약 390,000</td><td>26.0%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 14</td><td>약 500,000</td><td>33.3%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 15</td><td>약 600,000</td><td>40.0%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 16</td><td>약 725,000</td><td>48.3%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 17</td><td>약 870,000</td><td>58.0%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 18</td><td>약 1,040,000</td><td>69.3%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td>Lv 19</td><td>약 1,250,000</td><td>83.3%</td><td>—</td></tr>
+            <tr class="level-phase-3"><td><strong>Lv 20</strong> <span class="lv-badge prob">분기점</span></td><td><strong>약 1,500,000</strong></td><td><strong>100%</strong></td><td>최종 종결</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="insight-box">
+        <div class="insight-title">🔍 재화 소모 비대칭 구조</div>
+        <p>Lv8까지 도달이 전체 누적 비용의 약 7%에 불과하며, 나머지 약 93%가 Lv8~20 마라톤 구간에 집중되어 있습니다.</p>
+        <p><strong>"모든 옵션을 볼 수 있게 하는 단계(Lv1~7)는 빠르게 통과시키고, 그 옵션을 실제로 확보하는 단계(Lv8~20)에서 압도적 비중의 재화를 요구한다"</strong>는 본 시스템의 설계 철학이 드러납니다. 옵션 풀 개방은 비교적 짧고 가볍게, 옵션 확보(확률 펌핑)는 길고 깊게 설계되어 있어, 유저가 <mark>"이미 모든 패가 보이는 상태에서 그 패를 손에 넣기 위해 장기 투자하는 구조"</mark>가 형성됩니다.</p>
+      </div>
+      <p style="margin-top:16px;"><strong>② 레벨별 시도 횟수 가속 (L0 기준)</strong></p>
+      <p>각 레벨 구간에서 잠금 0개 기준 시도 횟수 = 레벨업 필요 훈장 ÷ L0 비용</p>
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead>
+            <tr><th>레벨업 구간</th><th>L0 비용</th><th>필요 시도 횟수</th><th><span class="th-tooltip">Lv1→2 대비 배수<span class="tip-icon">?</span><span class="tip-box">Lv1→2 구간의 필요 시도 횟수(350회)를 기준(1.0배)으로, 각 구간이 몇 배 더 많은 시도를 요구하는지 나타낸 상대 배율입니다.</span></span></th></tr>
+          </thead>
+          <tbody>
+            <tr class="level-phase-1"><td>Lv1 → 2</td><td>20</td><td>350회</td><td>1.0배</td></tr>
+            <tr class="level-phase-1"><td>Lv2 → 3</td><td>30</td><td>200회</td><td>0.6배</td></tr>
+            <tr class="level-phase-1"><td>Lv3 → 4</td><td>40</td><td>180회</td><td>0.5배</td></tr>
+            <tr class="level-phase-1"><td>Lv4 → 5</td><td>50</td><td>202회</td><td>0.6배</td></tr>
+            <tr class="level-phase-2"><td>Lv5 → 6</td><td>55</td><td>256회</td><td>0.7배</td></tr>
+            <tr class="level-phase-2"><td>Lv6 → 7</td><td>60</td><td>330회</td><td>0.9배</td></tr>
+            <tr class="level-phase-2"><td>Lv7 → 8</td><td>65</td><td>426회</td><td>1.2배</td></tr>
+            <tr class="level-phase-3"><td>Lv8 → 9</td><td>68</td><td>571회</td><td>1.6배</td></tr>
+            <tr class="level-phase-3"><td>Lv9 → 10</td><td>71</td><td>573회</td><td>1.6배</td></tr>
+            <tr class="level-phase-3"><td>Lv10 → 11</td><td>74</td><td>715회</td><td>2.0배</td></tr>
+            <tr class="level-phase-3"><td>Lv11 → 12</td><td>77</td><td>894회</td><td>2.6배</td></tr>
+            <tr class="level-phase-3"><td>Lv12 → 13</td><td>80</td><td>1,118회</td><td>3.2배</td></tr>
+            <tr class="level-phase-3"><td>Lv13 → 14</td><td>83</td><td>1,401회</td><td>4.0배</td></tr>
+            <tr class="level-phase-3"><td>Lv14 → 15</td><td>86</td><td>1,172회</td><td>3.3배</td></tr>
+            <tr class="level-phase-3"><td>Lv15 → 16</td><td>89</td><td>1,358회</td><td>3.9배</td></tr>
+            <tr class="level-phase-3"><td>Lv16 → 17</td><td>91</td><td>1,595회</td><td>4.6배</td></tr>
+            <tr class="level-phase-3"><td>Lv17 → 18</td><td>93</td><td>1,872회</td><td>5.3배</td></tr>
+            <tr class="level-phase-3"><td>Lv18 → 19</td><td>95</td><td>2,199회</td><td>6.3배</td></tr>
+            <tr class="level-phase-3"><td>Lv19 → 20</td><td>97</td><td>2,585회</td><td>7.4배</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Lv3→4 구간이 180회로 전체 최저점이며, 이후 단조 증가하여 Lv19→20에서는 2,585회(7.4배)에 달합니다. Lv1~4 구간에서 시도 횟수가 오히려 감소(350→180회)하는 것은, 레벨 초반 L0 비용 상승 속도가 레벨업 필요 훈장 증가 속도보다 빠르기 때문입니다. 이는 입문 구간에서 유저가 시스템에 빠르게 안착하도록 의도된 설계로 해석됩니다.</p>
+      <p style="margin-top:16px;"><strong>③ 잠금 운용에 따른 Lv20 도달 총 시도 횟수 (시뮬레이션 기준값)</strong></p>
+      <p>각 잠금 슬롯 수를 시뮬레이션상 일관되게 유지했을 때, Lv20 도달에 필요한 총 누적 시도 횟수입니다. 이는 실제 유저의 행동을 모사한 것이 아니라, 잠금 슬롯 수가 시도 횟수에 미치는 영향을 정량화하기 위한 비교 기준값입니다.</p>
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead>
+            <tr><th>잠금 슬롯 운용</th><th>1회 비용 배수</th><th>Lv20 도달 총 시도 횟수</th></tr>
+          </thead>
+          <tbody>
+            <tr style="background:var(--tier-s-bg);"><td><strong>0개 (시뮬레이션 기준값)</strong></td><td>1.0x</td><td><strong>약 17,521회</strong></td></tr>
+            <tr><td>1개</td><td>1.5x</td><td>약 11,681회</td></tr>
+            <tr><td>2개</td><td>2.0x</td><td>약 8,760회</td></tr>
+            <tr><td>3개</td><td>2.5x</td><td>약 7,008회</td></tr>
+            <tr><td>4개</td><td>3.0x</td><td>약 5,840회</td></tr>
+            <tr><td>5개</td><td>3.5x</td><td>약 5,006회</td></tr>
+            <tr style="background:var(--tier-s-bg);"><td><strong>6개 (시뮬레이션 기준값)</strong></td><td>4.0x</td><td><strong>약 4,380회</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>잠금 0개와 잠금 6개의 총 시도 횟수는 정확히 4배 차이(17,521 vs 4,380)이며, 이는 잠금 운용 강도에 따라 동일 재화로 확보 가능한 시행 횟수가 최대 4배까지 변동될 수 있음을 의미합니다. 실제 유저는 이 양 극단 사이에서 상황에 따라 운용 강도를 조절하며, 이에 대한 구체적 패턴은 5-5에서 다룹니다.</p>
+      <div style="background:#fef9e7;border:1px solid #fcd34d;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:12px;color:#92400e;line-height:1.7;">
+        <strong>⚠️ 유의</strong> — "Lv20까지 잠금 0개 영구 운용" 또는 "Lv20까지 잠금 6개 영구 운용" 같은 극단적 행동은 실제로 관찰되지 않습니다. 위 수치는 잠금 운용이 시도 횟수에 미치는 영향을 보여주기 위한 이론적 비교 기준입니다.
+      </div>
+      <p style="margin-top:16px;"><strong>④ 정량 분석이 드러내는 시스템의 설계 의도</strong></p>
+      <p>위 데이터를 종합하면 변환 레벨 시스템의 설계 의도는 다음과 같이 정리됩니다:</p>
+      <ul class="unit-list">
+        <li><span class="unit-dot level"></span><span><strong>단기 안착 (Lv1~4):</strong> 전체 비용의 1.7%만으로 빠르게 통과. 시도 횟수도 감소 추세 → 유저 리텐션 확보</span></li>
+        <li><span class="unit-dot level"></span><span><strong>전환 도약 (Lv5~7):</strong> 추천 스탯이 확장되며 종결 옵션을 본격 조준. 비용 비중 2.9%</span></li>
+        <li><span class="unit-dot level"></span><span><strong>장기 마라톤 (Lv8~20):</strong> 전체 비용의 95.4%가 집중. 시도 횟수도 가속 → 장기 결제 동선 형성</span></li>
+        <li><span class="unit-dot level"></span><span><strong>곡선 완화 (40→30→20%)와 비용 둔화 (+10→+5→+3):</strong> 절대량은 가속되지만 증가율은 완화되어 좌절 흡수</span></li>
+      </ul>
+      <div class="insight-box" style="margin-top:12px;">
+        <div class="insight-title">🎯 설계 철학 요약</div>
+        <p>변환 레벨은 <strong>"입구는 넓게, 출구는 깊게"</strong>라는 명확한 설계 철학을 바탕으로, 유저층 분화와 장기 BM 동선을 동시에 형성하는 정교한 시스템임이 데이터로 검증됩니다.</p>
+      </div>
+    </div>
+
+    <div class="level-subsection">
+      <h3>5-4. 잠금 시스템과의 보완 관계</h3>
+      <table class="comparison-table">
+        <thead>
+          <tr><th>구분</th><th class="col-lock">잠금 시스템</th><th class="col-lv">변환 레벨 시스템</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>작동 방향</strong></td><td class="col-lock">단기 성취 강화 (한 슬롯 완성)</td><td class="col-lv">장기 보상 보정 (레벨 누적)</td></tr>
+          <tr><td><strong>유저 심리</strong></td><td class="col-lock">매몰 비용 → 지속 동기</td><td class="col-lv">좌절 흡수 → 재도전 동기</td></tr>
+          <tr><td><strong>재화의 의미</strong></td><td class="col-lock">슬롯 완성을 위한 투자</td><td class="col-lv">미래 확률 향상을 위한 적립</td></tr>
+          <tr><td><strong>비용 곡선</strong></td><td class="col-lock">선형 가산 (L0 × 최대 4배)</td><td class="col-lv">단계적 완화 (40%→30%→20%)</td></tr>
+          <tr><td><strong>핵심 비중</strong></td><td class="col-lock">한 슬롯 단위 의사결정</td><td class="col-lv">Lv20 도달 시 총 150만 포인트</td></tr>
+        </tbody>
+      </table>
+      <p>두 시스템이 결합함으로써, 어빌리티 콘텐츠는 <strong>"단기 결과가 좋아도 좋고, 나빠도 장기 적립으로 보상받는"</strong> 양방향 성장 구조를 형성합니다.</p>
+    </div>
+
+    <div class="level-subsection">
+      <h3>5-5. 전략적 운용 패턴 — "잠금 최소화 → 변환 레벨 우선" 전환</h3>
+      <p>변환 레벨 시스템은 유저로 하여금 단순히 "옵션 완성"이라는 단일 목표가 아니라, 상황에 따라 잠금 운용 강도를 조절하는 전략적 의사결정을 하도록 유도합니다. 실제 라이브 환경에서는 다음과 같은 운용 패턴이 관찰됩니다.</p>
+      <table class="comparison-table" style="margin-top:12px;">
+        <thead>
+          <tr><th style="width:80px;">단계</th><th>행동</th><th>의도</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="text-align:center;font-weight:700;color:var(--accent);">1단계<br><small style="font-size:10px;color:var(--text-muted);">종결 시도</small></td><td>종결 옵션을 목표로 리롤, 잠금을 진행. 좋은 옵션이 뜨면 잠금하여 한 줄씩 완성 시도</td><td>기본 운용</td></tr>
+          <tr><td style="text-align:center;font-weight:700;color:#d97706;">2단계<br><small style="font-size:10px;color:var(--text-muted);">벽 인식</small></td><td>변환 레벨이 충분히 높지 않은 상태에서 종결 옵션 등장 확률이 낮아 진척이 정체된다고 판단</td><td>운용 한계 인식</td></tr>
+          <tr><td style="text-align:center;font-weight:700;color:var(--level);">3단계<br><small style="font-size:10px;color:var(--text-muted);">전략적 후퇴</small></td><td>일시적으로 잠금을 최소화(0~1개)하거나 기존 잠금을 일부 해제하여 1회 리롤 비용을 낮춤</td><td>변환 레벨 경험치 누적 우선</td></tr>
+          <tr><td style="text-align:center;font-weight:700;color:var(--strength);">4단계<br><small style="font-size:10px;color:var(--text-muted);">복귀</small></td><td>변환 레벨이 충분히 오른 뒤(특히 Lv5, Lv8 분기점 통과 후) 다시 잠금-완성 모드로 전환</td><td>종결 옵션 본격 확보</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:12px;">이 전환 패턴은 잠금 비용 산식의 선형 4배 구조(4-1)와 변환 레벨의 좌절 흡수 설계(5-2 ①)가 결합되어 자연스럽게 도출되는 합리적 전략입니다. 잠금 6개 운용 대비 0개 운용 시 동일 재화로 약 4배의 시도가 가능하다는 정량적 사실(5-3 ③ 참조)이 전환 단계의 효용을 뒷받침합니다.</p>
+      <p>특히 8레벨 이후 구간에서는 신규 옵션 등장 없이 확률만 누적 상승하므로, "확률이 충분히 오를 때까지 변환 레벨 누적을 우선하다가, 일정 수준 도달 후 본격적인 잠금 완성으로 전환"하는 두 단계 전략이 합리적 선택지로 작동합니다.</p>
+      <p>다만 이러한 전환은 유저마다 시점과 강도가 다르며, "Lv20까지 잠금 0개 영구 운용"이나 "처음부터 끝까지 잠금 6개 풀잠금" 같은 극단적 운영은 실제로 관찰되지 않습니다. 즉 이 전환 패턴은 별도의 유저층이 아니라, 일반 유저가 게임 진행 과정에서 자연스럽게 거치는 운용 단계이며, 시스템이 유저에게 다양한 선택지를 제공하고 있다는 점을 보여주는 사례로 평가됩니다.</p>
+      <div class="insight-box" style="margin-top:12px;">
+        <div class="insight-title">💡 시스템 설계 관점에서의 의의</div>
+        <p>본 전환 패턴이 자연스럽게 형성된다는 것은, 잠금 시스템과 변환 레벨 시스템이 단순히 병렬로 존재하는 것이 아니라 유저의 상황 판단에 따라 상호 보완적으로 사용되도록 설계되었음을 의미합니다. 이는 5-4에서 정리한 두 시스템의 보완 관계가 실제 유저 행동에서 검증된 결과로 볼 수 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S6 ── -->
+  <section class="section" id="s6">
+    <div class="section-label">SECTION 06</div>
+    <h2>주요 옵션 티어 및 메타 분석</h2>
+    <p>라이브 서버 메타와 타 콘텐츠(장비, 동료 등)와의 시너지를 기반으로 평가한 옵션 티어입니다. 이는 5-2 ②에서 분석한 5Lv 추천 스탯 확장 시점과 직접 연결됩니다.</p>
+    <div class="tier-cards">
+      <div class="tier-card s-tier">
+        <div class="tc-label"><span class="tc-badge s">0 TIER</span> 최우선 종결 및 범용 공용 옵션</div>
+        <ul>
+          <li><img class="game-icon-sm" src="../images/ability1_1_icon.png" alt="공격 속도"> <span><strong>공격 속도 (최대 20%)</strong> — 잠재 옵션 등 다른 수단으로 수급이 어려우며, 어빌리티 수치가 압도적으로 높아 최우선 확보 대상 <span class="prob-chip">1Lv부터 추천 풀 포함</span></span></li>
+          <li><span class="multi-icon"><img class="game-icon-sm" src="../images/ability2_2_icon.png" alt="최소 데미지 배율"><img class="game-icon-sm" src="../images/ability2_1_icon.png" alt="최대 데미지 배율"></span> <span><strong>최소/최대 데미지 배율 (최대 40%)</strong> — 특정 직업군 동료 효과와 합/곱연산 시너지를 형성하며 딜 고점을 안정적으로 확보하는 범용 옵션 <span class="prob-chip">1Lv부터 추천 풀 포함</span></span></li>
+          <li><span class="multi-icon"><img class="game-icon-sm" src="../images/ability3_1_icon.png" alt="보스 몬스터 데미지1"><img class="game-icon-sm" src="../images/ability3_2_icon.png" alt="보스 몬스터 데미지2"></span> <span><strong>보스 몬스터 데미지 (최대 40%)</strong> — 파티 퀘스트, 레이드 등 주요 보상 콘텐츠 돌파의 핵심 옵션 <span class="prob-chip">5Lv부터 추천 풀 추가</span></span></li>
+          <li><img class="game-icon-sm" src="../images/ability4_1_icon.png" alt="방어 관통력"> <span><strong>방어 관통력 (최대 20%)</strong> — 하이엔드 콘텐츠 필수 옵션 <span class="prob-chip">5Lv부터 추천 풀 추가</span></span></li>
+        </ul>
+        <div class="insight-box" style="margin-top:12px;">
+          <div class="insight-title">🔍 5Lv 추천 풀 확장의 시스템적 의미</div>
+          <p>보스 데미지 / 방어 관통력 등 종결 옵션이 5Lv 시점에 추천 스탯 풀에 정식 추가된다는 데이터 사실은, 5Lv가 단순히 등급 변화 시점을 넘어 하이엔드 콘텐츠를 본격적으로 조준하는 시스템적 진입점임을 강하게 시사합니다.</p>
+        </div>
+      </div>
+      <div class="tier-card b-tier">
+        <div class="tc-label"><span class="tc-badge b">성장 단계별</span> 효용 변화에 따라 우선순위 조정 대상 옵션</div>
+        <ul>
+          <li><span class="multi-icon"><img class="game-icon-sm" src="../images/ability5_1_icon.png" alt="크리티컬1"><img class="game-icon-sm" src="../images/ability5_2_icon.png" alt="크리티컬2"><img class="game-icon-sm" src="../images/ability5_3_icon.png" alt="크리티컬3"></span> <span><strong>크리티컬 확률 &amp; 데미지 증가(%)</strong> — 초반 구간에서는 유효하나, 성장이 진행됨에 따라 장비의 '스타포스' 강화 등 다른 시스템으로 보완이 가능해지며 합연산 효율이 점차 변화</span></li>
+          <li><span class="multi-icon"><img class="game-icon-sm" src="../images/ability6_1_icon.png" alt="생존형1"><img class="game-icon-sm" src="../images/ability6_2_icon.png" alt="생존형2"><img class="game-icon-sm" src="../images/ability6_3_icon.png" alt="생존형3"><img class="game-icon-sm" src="../images/ability6_4_icon.png" alt="생존형4"><img class="game-icon-sm" src="../images/ability6_5_icon.png" alt="생존형5"></span> <span><strong>생존형 스탯 (최대 HP, 크리티컬 저항, 받는 피해 감소)</strong> — 랭커 PVP 아레나 세팅 외 일반적인 성장 동선에서는 우선순위가 후순위로 조정되는 경향</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S7 ── -->
+  <section class="section" id="s7">
+    <div class="section-label">SECTION 07</div>
+    <h2>재화 운영(Economy) 및 유저층별 운영 전략</h2>
+    <p>어빌리티 성장의 주요 변수는 전용 재화인 <mark>명예의 훈장</mark> 수급량이며, 이 변수가 4~5장에서 분석한 <mark>잠금-프리셋-변환 레벨 사이클</mark>과 결합되며 유저층별 플레이 패턴을 자연스럽게 분화시킵니다.</p>
+    <div class="econ-cards">
+      <div class="econ-card free">
+        <div class="ec-title"><img class="game-icon-sm" src="../images/nobg_red_diamond_icon.png" alt="무/소과금"> 무/소과금 — "범용 세팅 활용"</div>
+        <p>재화가 한정적이므로 프리셋 다각화보다는, 잠금-프리셋 사이클을 <strong>1개 프리셋에 집중 투입</strong>하는 전략을 취합니다. '공격 속도'나 '최대 데미지 배율' 등 1Lv부터 추천 풀에 포함된 범용성 높은 옵션을 중심으로 1개 프리셋을 안정적으로 완성하여 다방면에 대응하는 효율 중심 플레이를 선호합니다. 이 경우 잠금 메커니즘의 증폭 효과는 1개 프리셋 내에서만 작동하며, 변환 레벨도 점진적으로 누적되는 형태로 진행됩니다. 5-3 ④에서 분석한 "입구는 넓게" 구조 덕분에 Lv8(전체 비용의 6.4%)까지는 비교적 빠르게 도달 가능합니다.</p>
+      </div>
+      <div class="econ-card whale">
+        <div class="ec-title"><img class="game-icon-sm" src="../images/nobg_blue_diamond_icon.png" alt="최상위 투자형"> 최상위 투자형 — "프리셋 다각화 + 변환 레벨 풀업"</div>
+        <p>최고 효율 확보를 위해 프리셋을 적극적으로 확장합니다. 1번(사냥/경험치 획득), 2번(보스 극딜), 3번(아레나 방어) 등 목적별로 분리하여 운영하며, 각 슬롯의 종결 옵션 확보를 위해 <strong>잠금-프리셋 사이클을 N회 반복 가동</strong>합니다. '프리셋 = 잠금 메커니즘의 증폭 장치' 효과가 콘텐츠 수만큼 곱셈으로 작용하는 동시에, 변환 레벨도 빠르게 5Lv→8Lv 단계로 이행하며 미스틱 등급 옵션 등장 확률을 본격적으로 펌핑합니다.</p>
+      </div>
+    </div>
+
+    <div style="background:#f8faff;border:1px solid #c7d2fe;border-radius:10px;padding:16px 20px;margin-top:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.05em;margin-bottom:10px;">📌 공통 전략 단계 — "잠금 최소화 → 변환 레벨 우선" 전환 (5-5 참조)</div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;margin-bottom:10px;">위 두 유저층은 운영 규모와 프리셋 다각화 정도에서 차이가 있을 뿐, 변환 레벨이 낮은 구간에서 종결 옵션 진척이 정체될 때 일시적으로 잠금을 최소화하여 변환 레벨 경험치 누적을 우선하는 전환 패턴은 양쪽 모두에서 관찰됩니다. 이는 별도의 제3 유저층이 아니라, 시스템이 모든 유저에게 제공하는 합리적 선택지로 작동합니다.</p>
+      <ul class="unit-list" style="margin-bottom:10px;">
+        <li><span class="unit-dot"></span><span><strong>무/소과금 유저:</strong> 재화가 한정적이므로 이 전환을 더 자주, 더 길게 활용하는 경향</span></li>
+        <li><span class="unit-dot"></span><span><strong>최상위 투자형 유저:</strong> 빠른 분기점 통과를 위해 초반 구간에서 짧게 활용한 뒤 본격 완성으로 복귀하는 경향</span></li>
+      </ul>
+      <p style="font-size:12px;color:var(--text-muted);line-height:1.7;">5-5에서 분석한 4단계 전환 패턴(종결 시도 → 벽 인식 → 전략적 후퇴 → 복귀)이 유저층에 관계없이 공통적으로 나타나며, 이는 잠금 시스템과 변환 레벨 시스템의 보완적 설계가 실제 유저 행동에서 검증되는 지점이기도 합니다.</p>
+    </div>
+  </section>
+
+  <!-- ── S8 ── -->
+  <section class="section" id="s8">
+    <div class="section-label">SECTION 08</div>
+    <h2>종합 평가(SWOT) 및 시스템 밸런스</h2>
+    <div class="swot-grid">
+      <div class="swot-card strength">
+        <div class="sw-label">✅ 우수한 점 (Strength)</div>
+        <p>'스타포스', '유물' 등 타 성장 시스템과의 연계 구조가 매우 정교하게 설계되어 있으며, 어빌리티 시스템 내부적으로도 <strong>잠금-프리셋-변환 레벨의 삼중 구조</strong>가 상호 보완적으로 작동하는 점이 가장 인상적입니다. 데이터 테이블 분석을 통해 검증된 주요 우수 설계 요소는 다음과 같습니다:</p>
+        <ul>
+          <li>[리롤 ↔ 잠금] → [프리셋 완성] → [프리셋 다각화] → [사이클 반복]의 순환 구조가 단계별 성취감과 장기 목표 의식을 동시에 제공</li>
+          <li>잠금 비용의 선형 가산 산식(L0 × (1 + 0.5 × k))은 유저가 재화 투자를 사전 예측 가능하도록 설계되어, 무리한 진입 장벽을 형성하지 않음</li>
+          <li>변환 레벨의 두 분기점 구조(5Lv 종결 옵션 조준점 + 8Lv 확률 펌핑 진입점)는 단계별로 명확한 성장 목표를 제공</li>
+          <li>레벨업 곡선의 단계적 완화(40%→30%→20%)와 L0 비용 증가폭 둔화(+10→+5→+3)는 장기 마라톤 구간에서의 좌절 리스크를 흡수하는 정교한 설계</li>
+          <li>"입구는 넓게, 출구는 깊게" 재화 소모 구조(Lv8까지 6.4% / Lv8~20에 93.6% 집중)는 단기 안착과 장기 BM을 동시에 달성하는 우수한 설계</li>
+          <li>잠금 시스템의 매몰 비용 효과를 변환 레벨 시스템이 좌절 흡수 장치로 보완하는 양방향 설계가 시스템의 안정성을 크게 향상</li>
+        </ul>
+      </div>
+      <div class="swot-card weakness">
+        <div class="sw-label">🔧 보완 가능한 점 및 운영상 밸런스 장치 (Weakness &amp; Balance)</div>
+        <p>프리셋 다각화 시 명예의 훈장 수급에 병목이 발생할 수 있는 구조이며, 변환 레벨 Lv20 도달까지 약 150만 포인트의 누적 경험치가 요구되는 점은 무/소과금 유저에게 다소 긴 호흡의 목표가 될 수 있습니다. 특히 마라톤 구간(Lv8~20)에 전체 비용의 93.6%가 집중된 비대칭 구조는 후반 진입 유저에게 상당한 인내를 요구합니다.</p>
+        <p>다만 게임 서비스 측면에서 핫딜, 인게임 이벤트, 주간 보상 시스템 등을 통해 훈장 재화를 지속적으로 공급하고, 변환 레벨 시스템의 단계적 완화 곡선과 좌절 흡수 설계가 단기 운에 의한 이탈을 효과적으로 방어함으로써 <strong>성장의 흐름이 원활하게 유지</strong>되도록 밸런스가 조절되고 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S9 ── -->
+  <section class="section" id="s9">
+    <div class="section-label">SECTION 09</div>
+    <h2>후속 산출물 안내</h2>
+    <p>본 분석서는 어빌리티 시스템에 대한 <strong>시스템 이해 및 검증 설계의 기반 문서</strong>이며, 이를 바탕으로 다음 산출물을 별도 작성하였습니다.</p>
+    <div class="followup-cards">
+      <a href="step2_table.html" class="followup-card">
+        <img class="fc-thumb" src="../images/Step2_Panel.png" alt="데이터 테이블 미리보기">
+        <div class="fc-body">
+          <div class="fc-title">어빌리티 데이터 테이블</div>
+          <div class="fc-desc">옵션별 수치/등급/적용 조건, 잠금 비용 산식, 변환 레벨 경험치 / 추천 스탯 / 등급 풀 변화 정리</div>
+        </div>
+      </a>
+      <a href="step3_simulator.html" class="followup-card">
+        <div class="fc-thumb-wrap">
+          <img class="fc-thumb" src="../images/Step3_1_Panel.png" alt="시뮬레이터 미리보기1">
+          <img class="fc-thumb" src="../images/Step3_2_Panel.png" alt="시뮬레이터 미리보기2">
+        </div>
+        <div class="fc-body">
+          <div class="fc-title">어빌리티 시뮬레이터</div>
+          <div class="fc-desc">옵션 등장 확률, 잠금 슬롯별 실제 훈장 비용, 변환 레벨 구간별 확률 변화, 재화 소비 기댓값 검증</div>
+        </div>
+      </a>
+      <a href="step4_testcase.html" class="followup-card">
+        <div class="fc-thumb-wrap-4">
+          <div class="fc-thumb-row4">
+            <img src="../images/Step4_1_Panel.png" alt="TC 요약1">
+            <img src="../images/Step4_2_Panel.png" alt="TC 목록">
+          </div>
+          <div class="fc-thumb-row4">
+            <img src="../images/Step4_3_Panel.png" alt="TC 요약2">
+            <img src="../images/Step4_4_Panel.png" alt="TC 상세">
+          </div>
+        </div>
+        <div class="fc-body">
+          <div class="fc-title">용사의 힘 어빌리티 Test Case</div>
+          <div class="fc-desc">옵션변화 / 잠금 / 어빌리티 변환 레벨 / 옵션 적용 등 기능 및 UI 검증 시나리오<br><br>
+            <span style="display:block;margin-bottom:3px;">1. UI 출력 — 용사의 힘, 어빌리티</span>
+            <span style="display:block;margin-bottom:3px;">2. UI 상호작용 — 용사의 힘, 어빌리티</span>
+            <span style="display:block;">3. 어빌리티 옵션 출력 확인 — 변환 레벨별 옵션 확인, 옵션 최솟값/최댓값 확인</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  메이플 키우기 | 용사의 힘 어빌리티 QA 포트폴리오 &nbsp;|&nbsp; Step 1 / 4 &nbsp;|&nbsp; 콘텐츠 분석서
+</footer>
+
+</body>
+</html>

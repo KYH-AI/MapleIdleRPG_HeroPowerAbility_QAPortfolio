@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>메이플키우기 용사의 힘 어빌리티 분석서</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent:        #6366f1;
+    --accent-dark:   #4338ca;
+    --accent-light:  #eef2ff;
+    --bg:            #f8fafc;
+    --surface:       #ffffff;
+    --border:        #e2e8f0;
+    --text-primary:  #1e293b;
+    --text-secondary:#475569;
+    --text-muted:    #94a3b8;
+    --shadow:        0 1px 3px rgba(0,0,0,.08);
+    --shadow-lg:     0 8px 32px rgba(99,102,241,.13);
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── 상단 네비 ── */
+  .top-nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    box-shadow: var(--shadow);
+  }
+  .top-nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 5px;
+    transition: background .15s, color .15s;
+  }
+  .top-nav a:hover { background: var(--accent-light); color: var(--accent); }
+  .top-nav a.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .top-nav .sep { color: var(--border); }
+
+  /* ── 메인 커버 ── */
+  .cover-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+  }
+
+  .cover-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    max-width: 860px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* 상단 배너 */
+  .cover-banner {
+    background: url('../images/hero_power_bg.png') center 0%/cover no-repeat;
+    padding: 56px 56px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-portfolio-label {
+    display: inline-block;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.9);
+    letter-spacing: .08em;
+    margin-bottom: 20px;
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  }
+  .cover-game-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255,255,255,.9);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0 1px 4px rgba(0,0,0,.7);
+  }
+  .cover-game-title img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 6px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.8));
+  }
+  .cover-main-title {
+    font-size: 34px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 8px rgba(0,0,0,.8), 0 1px 2px rgba(0,0,0,.9);
+  }
+  .cover-sub-title {
+    font-size: 15px;
+    color: rgba(255,255,255,.9);
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 5px rgba(0,0,0,.75);
+  }
+
+  /* 하단 내용 */
+  .cover-body {
+    padding: 36px 48px 40px;
+  }
+
+  /* 포트폴리오 구성 */
+  .cover-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .cover-step {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+  }
+  .cover-step:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(99,102,241,.15);
+    transform: translateY(-2px);
+  }
+  .cover-step-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: .06em;
+    margin-bottom: 5px;
+  }
+  .cover-step-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .cover-step-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* 구분선 */
+  .cover-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 0 28px;
+  }
+
+  /* 작성자 정보 */
+  .cover-author {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cover-author-info {}
+  .cover-author-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+  .cover-contact-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cover-contact-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+  .contact-tag {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    min-width: 48px;
+    text-align: center;
+    letter-spacing: .03em;
+  }
+
+  /* 시작 버튼 */
+  .cover-start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s, transform .15s, box-shadow .15s;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+  .cover-start-btn:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(99,102,241,.35);
+  }
+  .cover-start-btn .btn-arrow { font-size: 16px; }
+
+  /* 하단 크레딧 */
+  .cover-footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 14px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .cover-footer-ai {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cover-footer-ai strong { color: var(--accent-dark); }
+
+  @media (max-width: 600px) {
+    .cover-banner { padding: 36px 28px 30px; }
+    .cover-main-title { font-size: 22px; }
+    .cover-body { padding: 28px 28px 32px; }
+    .cover-steps { grid-template-columns: repeat(2, 1fr); }
+    .cover-author { flex-direction: column; gap: 20px; }
+    .cover-start-btn { width: 100%; justify-content: center; }
+    .cover-footer { flex-direction: column; gap: 6px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 상단 네비 -->
+<nav class="top-nav">
+  <a href="step0_cover.html" class="active">표지</a>
+  <span class="sep">›</span>
+  <a href="step1_analysis.html">Step 1 분석서</a>
+  <span class="sep">›</span>
+  <a href="step2_table.html">Step 2 데이터 테이블</a>
+  <span class="sep">›</span>
+  <a href="step3_simulator.html">Step 3 시뮬레이터</a>
+  <span class="sep">›</span>
+  <a href="step4_testcase.html">Step 4 Test Case</a>
+</nav>
+
+<!-- 메인 커버 -->
+<div class="cover-wrap">
+  <div class="cover-card">
+
+    <!-- 배너 -->
+    <div class="cover-banner">
+      <div class="cover-portfolio-label">QA PORTFOLIO</div>
+      <div class="cover-game-title">
+        <img src="../images/mapleIdleRPG_icon.png" alt="메이플키우기">
+        메이플 키우기 — 용사의 힘 어빌리티
+      </div>
+      <div class="cover-main-title">
+        용사의 힘 어빌리티 분석서
+      </div>
+      <div class="cover-sub-title" style="font-size:14px;font-weight:600;margin-bottom:8px;">
+        "왜 유저는 어빌리티에 몰입하는가?"
+      </div>
+      <div class="cover-sub-title">
+        시스템 분석, 데이터 검증, 시뮬레이션, 테스트 케이스로 추적한 4단계 QA 포트폴리오
+      </div>
+    </div>
+
+    <!-- 본문 -->
+    <div class="cover-body">
+
+      <!-- 포트폴리오 구성 -->
+      <div class="cover-steps">
+        <a href="step1_analysis.html" class="cover-step">
+          <div class="cover-step-num">STEP 1</div>
+          <div class="cover-step-name">콘텐츠 분석서</div>
+          <div class="cover-step-desc">시스템 구조, 옵션 분석, 재화 운영</div>
+        </a>
+        <a href="step2_table.html" class="cover-step">
+          <div class="cover-step-num">STEP 2</div>
+          <div class="cover-step-name">데이터 테이블</div>
+          <div class="cover-step-desc">옵션 수치, 변환 레벨 데이터 정리</div>
+        </a>
+        <a href="step3_simulator.html" class="cover-step">
+          <div class="cover-step-num">STEP 3</div>
+          <div class="cover-step-name">시뮬레이터</div>
+          <div class="cover-step-desc">확률 검증, 비용 계산, 옵션 시뮬레이션</div>
+        </a>
+        <a href="step4_testcase.html" class="cover-step">
+          <div class="cover-step-num">STEP 4</div>
+          <div class="cover-step-name">Test Case</div>
+          <div class="cover-step-desc">리롤, 잠금, 프리셋, 변환 레벨 기능 검증 시나리오</div>
+        </a>
+      </div>
+
+      <hr class="cover-divider">
+
+      <!-- 작성자 -->
+      <div class="cover-author">
+        <div class="cover-author-info">
+          <div class="cover-author-name">김윤호</div>
+          <ul class="cover-contact-list">
+            <li>
+              <span class="contact-tag">H.P</span>
+              010-8281-7765
+            </li>
+            <li>
+              <span class="contact-tag">Email</span>
+              kyh3263865@naver.com
+            </li>
+          </ul>
+        </div>
+        <a href="step1_analysis.html" class="cover-start-btn">
+          분석서 시작하기
+          <span class="btn-arrow">→</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- 크레딧 -->
+    <div class="cover-footer">
+      <span>메이플 키우기 &nbsp;|&nbsp; 용사의 힘 어빌리티 QA 포트폴리오 &nbsp;|&nbsp; 표지</span>
+      <div style="font-size:11px;color:var(--text-muted);text-align:right;line-height:1.7;">
+        본 포트폴리오의 시각적 구성은 AI 협업으로 제작되었으며,<br>
+        분석 내용은 본인의 1차 작업입니다.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 4 · 용사의 힘 어빌리티 Test Case</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent: #4361ee;
+      --accent-light: #eef0fd;
+      --pass: #16a34a;
+      --pass-bg: #f0fdf4;
+      --fail: #dc2626;
+      --fail-bg: #fef2f2;
+    }
+
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text-primary); font-size: 14px; line-height: 1.6; }
+
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 16px 32px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 10;
+    }
+    .header-title { font-size: 15px; font-weight: 700; }
+    .header-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .nav-links { display: flex; gap: 10px; }
+    .nav-links a {
+      font-size: 12px; color: var(--text-secondary); text-decoration: none;
+      padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; transition: background .15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--accent-light); color: var(--accent); border-color: #c7d2fe; }
+
+    /* ── Section ── */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-top: 24px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 6px; }
+    .section h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--accent-light); }
+    .section h3 { font-size: 15px; font-weight: 600; margin: 22px 0 10px; }
+    .section p  { font-size: 13px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 10px; }
+    .note { background: #f8faff; border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+
+    /* ── Overview meta ── */
+    .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .meta-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+    .meta-card .mc-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .meta-card .mc-value { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+
+    /* ── TC Category cards ── */
+    .tc-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .tc-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .tc-card-header { padding: 14px 18px; background: var(--accent-light); border-bottom: 1px solid #c7d2fe; display: flex; align-items: center; justify-content: space-between; }
+    .tc-card-header .tc-no { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: .05em; }
+    .tc-card-header .tc-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+    .tc-card-body { padding: 16px 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.9; }
+    .tc-card-body ul { padding-left: 16px; }
+    .tc-card-body li { margin-bottom: 4px; }
+    .tc-stat { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .stat-chip { padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+    .stat-pass  { background: var(--pass-bg); color: var(--pass); }
+    .stat-total { background: #f1f5f9; color: var(--text-secondary); }
+    .stat-ver   { background: #f0f4ff; color: var(--accent); }
+    .stat-date  { background: #f8f8f8; color: var(--text-muted); }
+
+    /* ── Result summary table ── */
+    .result-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 14px; }
+    .result-table th { background: var(--bg); padding: 8px 12px; text-align: center; border: 1px solid var(--border); font-weight: 600; color: var(--text-secondary); }
+    .result-table td { padding: 8px 12px; text-align: center; border: 1px solid var(--border); }
+    .result-table .pass-val { color: var(--pass); font-weight: 700; }
+    .result-table .fail-val { color: var(--fail); }
+    .result-table .total-val { font-weight: 700; }
+
+    /* ── Google link ── */
+    .link-section { display: flex; align-items: center; gap: 16px; background: var(--accent-light); border: 1px solid #c7d2fe; border-radius: 10px; padding: 18px 22px; margin-top: 20px; }
+    .link-icon { font-size: 28px; flex-shrink: 0; }
+    .link-body { flex: 1; }
+    .link-body .lb-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .link-body .lb-desc  { font-size: 12px; color: var(--text-muted); }
+    .link-btn { display: inline-block; padding: 8px 18px; background: var(--accent); color: #fff; border-radius: 7px; font-size: 12px; font-weight: 600; text-decoration: none; white-space: nowrap; transition: opacity .15s; }
+    .link-btn:hover { opacity: .85; }
+    .link-btn.disabled { background: var(--text-muted); cursor: not-allowed; pointer-events: none; }
+
+    /* ── scope tag ── */
+    .scope-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .scope-tag { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 600; background: #f0f4ff; color: var(--accent); border: 1px solid #c7d2fe; }
+
+    footer { text-align: center; padding: 28px 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-title">메이플 키우기 | 용사의 힘 어빌리티 — Step 4</div>
+    <div class="header-sub">Test Case</div>
+  </div>
+  <nav class="nav-links">
+    <a href="step1_analysis.html">① 콘텐츠 분석서</a>
+    <a href="step2_table.html">② 데이터 테이블</a>
+    <a href="step3_simulator.html">③ 시뮬레이터</a>
+    <a href="step4_testcase.html" class="active">④ Test Case</a>
+  </nav>
+</header>
+
+<div class="page-wrap">
+
+  <!-- ── 개요 ── -->
+  <section class="section">
+    <div class="section-label">OVERVIEW</div>
+    <h2>용사의 힘 어빌리티 Test Case</h2>
+    <div class="note">본 Test Case는 메이플키우기 용사의 힘 어빌리티 시스템의 UI 출력 정합성, UI 상호작용, 어빌리티 옵션 출력을 검증한 실행 결과입니다.</div>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="mc-label">클라이언트 버전</div>
+        <div class="mc-value">v1.9.2</div>
+      </div>
+      <div class="meta-card">
+        <div class="mc-label">담당자</div>
+        <div class="mc-value">김윤호</div>
+      </div>
+      <div class="meta-card">
+        <div class="mc-label">전체 Pass율</div>
+        <div class="mc-value" style="color:var(--pass)">100%</div>
+      </div>
+      <div class="meta-card">
+        <div class="mc-label">테스트 범위</div>
+        <div class="mc-value">3개 카테고리</div>
+      </div>
+    </div>
+
+    <h3>테스트 범위</h3>
+    <div class="scope-wrap">
+      <span class="scope-tag">UI 출력 — 용사의 힘</span>
+      <span class="scope-tag">UI 출력 — 어빌리티</span>
+      <span class="scope-tag">UI 상호작용 — 용사의 힘</span>
+      <span class="scope-tag">UI 상호작용 — 어빌리티</span>
+      <span class="scope-tag">어빌리티 옵션 출력 확인</span>
+      <span class="scope-tag">변환 레벨별 옵션 출력</span>
+      <span class="scope-tag">옵션 최솟값/최댓값 확인</span>
+    </div>
+  </section>
+
+  <!-- ── TC 카테고리 ── -->
+  <section class="section">
+    <div class="section-label">TEST CASE CATEGORIES</div>
+    <h2>카테고리별 테스트 현황</h2>
+
+    <div class="tc-cards">
+
+      <div class="tc-card">
+        <div class="tc-card-header">
+          <div>
+            <div class="tc-no">CATEGORY 01</div>
+            <div class="tc-title">UI 출력 — 용사의 힘 / 어빌리티</div>
+          </div>
+        </div>
+        <div class="tc-card-body">
+          <ul>
+            <li>용사의 힘 메인 창 출력 상태 확인</li>
+            <li>어빌리티 패널 창 출력 상태 확인</li>
+            <li>재화(명예의 훈장, 다이아) 아이콘 및 수치 출력 확인</li>
+            <li>슬롯 구성 요소 (옵션명, 수치, 등급) 출력 정합성 검증</li>
+            <li>용사의 힘 단계 및 슬롯 개방 상태 출력 확인</li>
+          </ul>
+          <div class="tc-stat">
+            <span class="stat-chip stat-pass">Pass 100%</span>
+            <span class="stat-chip stat-ver">v1.9.2</span>
+            <span class="stat-chip stat-date">2026/05/12</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-card-header">
+          <div>
+            <div class="tc-no">CATEGORY 02</div>
+            <div class="tc-title">UI 상호작용 — 용사의 힘 / 어빌리티</div>
+          </div>
+        </div>
+        <div class="tc-card-body">
+          <ul>
+            <li>용사의 힘 가이드 팁 버튼 상호작용 확인</li>
+            <li>재화 버튼 탭 및 팝업 출력 상호작용 확인</li>
+            <li>어빌리티 승급 버튼 및 조건 미충족 토스트 메시지 확인</li>
+            <li>패널 스크롤 (위/아래) 상호작용 확인</li>
+            <li>슬롯 잠금/해제 버튼 상호작용 및 상태 반영 확인</li>
+          </ul>
+          <div class="tc-stat">
+            <span class="stat-chip stat-pass">Pass 100%</span>
+            <span class="stat-chip stat-ver">v1.9.2</span>
+            <span class="stat-chip stat-date">2026/05/13</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tc-card">
+        <div class="tc-card-header">
+          <div>
+            <div class="tc-no">CATEGORY 03</div>
+            <div class="tc-title">어빌리티 옵션 출력 확인</div>
+          </div>
+        </div>
+        <div class="tc-card-body">
+          <ul>
+            <li>어빌리티 변환 레벨(1~20)별 출현 가능 옵션 출력 검증</li>
+            <li>각 옵션 최솟값/최댓값 출력 정합성 확인</li>
+            <li>등급(노말~미스틱)별 옵션 풀 변화 시점 확인</li>
+            <li>레벨 5/8 분기점에서의 신규 옵션 해금 정합성 검증</li>
+          </ul>
+          <div class="tc-stat">
+            <span class="stat-chip stat-pass">Pass 100%</span>
+            <span class="stat-chip stat-ver">v1.9.2</span>
+            <span class="stat-chip stat-date">2026/05/14</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tc-card" style="border-color:#e0f2fe; background:#f0f9ff;">
+        <div class="tc-card-header" style="background:#e0f2fe; border-color:#bae6fd;">
+          <div>
+            <div class="tc-no" style="color:#0369a1;">RESULT SUMMARY</div>
+            <div class="tc-title">전체 테스트 결과 집계</div>
+          </div>
+        </div>
+        <div class="tc-card-body">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>테스트 항목</th>
+                <th>Pass</th>
+                <th>Fail</th>
+                <th>Block</th>
+                <th>N/A</th>
+                <th>Total</th>
+                <th>성공률</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>UI 출력</td>
+                <td class="pass-val">100%</td>
+                <td class="fail-val">0%</td>
+                <td>0%</td>
+                <td>0%</td>
+                <td class="total-val">100</td>
+                <td class="pass-val">100</td>
+              </tr>
+              <tr>
+                <td>UI 상호작용</td>
+                <td class="pass-val">100%</td>
+                <td class="fail-val">0%</td>
+                <td>0%</td>
+                <td>0%</td>
+                <td class="total-val">100</td>
+                <td class="pass-val">100</td>
+              </tr>
+              <tr>
+                <td>어빌리티 옵션 출력</td>
+                <td class="pass-val">100%</td>
+                <td class="fail-val">0%</td>
+                <td>0%</td>
+                <td>0%</td>
+                <td class="total-val">100</td>
+                <td class="pass-val">100</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 전체 TC 링크 ── -->
+  <section class="section">
+    <div class="section-label">FULL TEST CASE DATA</div>
+    <h2>전체 Test Case 데이터</h2>
+    <p>전체 Test Case 목록(소분류 ID, 사전조건, 테스트 스텝, 기대결과 등 상세 항목)은 데이터 용량 관계로 외부 Google Sheets 문서로 제공합니다.</p>
+
+    <div class="note" style="margin-bottom:16px;">
+      <strong>Google Sheets 구성 안내</strong> — 총 6개 시트로 구성되어 있으며, 각 카테고리별 <strong>요약 시트</strong>와 <strong>상세 케이스 시트</strong>가 쌍으로 구성됩니다.<br><br>
+      <span style="color:var(--text-primary);">① UI 테스트 요약</span> — UI 출력 카테고리 전체 Pass/Fail 집계 요약<br>
+      <span style="color:var(--text-primary);">② UI 테스트 케이스</span> — 용사의 힘 / 어빌리티 패널 UI 출력 항목별 상세 케이스<br>
+      <span style="color:var(--text-primary);">③ INPUT(상호작용) 테스트 요약</span> — 버튼, 스크롤, 잠금 등 상호작용 카테고리 집계 요약<br>
+      <span style="color:var(--text-primary);">④ INPUT 테스트 케이스</span> — 각 상호작용 동작별 사전조건·스텝·기대결과 상세 케이스<br>
+      <span style="color:var(--text-primary);">⑤ 용사의 힘 어빌리티 테스트 요약</span> — 옵션 출력 확인 카테고리 집계 요약<br>
+      <span style="color:var(--text-primary);">⑥ 용사의 힘 어빌리티 테스트 케이스</span> — 변환 레벨별 옵션 출력 정합성 상세 케이스
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text-secondary);">
+        <div style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.06em;margin-bottom:4px;">SHEET 1~2</div>
+        UI 테스트 요약 / UI 테스트 케이스
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text-secondary);">
+        <div style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.06em;margin-bottom:4px;">SHEET 3~4</div>
+        INPUT(상호작용) 테스트 요약 / 테스트 케이스
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text-secondary);">
+        <div style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.06em;margin-bottom:4px;">SHEET 5~6</div>
+        용사의 힘 어빌리티 테스트 요약 / 테스트 케이스
+      </div>
+    </div>
+
+    <div class="link-section">
+      <div class="link-icon">📋</div>
+      <div class="link-body">
+        <div class="lb-title">용사의 힘 어빌리티 Test Case 전체 문서</div>
+        <div class="lb-desc">UI 출력 / UI 상호작용(INPUT) / 어빌리티 옵션 출력 — 6개 시트 전 항목 수록 (Google Sheets)</div>
+      </div>
+      <a href="https://docs.google.com/spreadsheets/d/1VG1bxS1fb3Pm47VJ_jT2RpTWqjOfbXTRyXGjt7ufvuU/edit?usp=drive_link" class="link-btn" target="_blank" rel="noopener">Google Sheets 열기</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>메이플 키우기 &nbsp;|&nbsp; 용사의 힘 어빌리티 QA 포트폴리오 &nbsp;|&nbsp; Step 4 / 4 &nbsp;|&nbsp; Test Case</footer>
+
+</body>
+</html>
